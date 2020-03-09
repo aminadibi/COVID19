@@ -37,12 +37,13 @@ body <- dashboardBody(
                
                box(width = NULL, status = "warning",
                    #uiOutput("timeSinceLastUpdate"),
-                   actionButton("refresh", "Refresh now"),
                    p(class = "text-muted",
                      br(),
-                     paste0("Last updated ", lubridate::now(), " PST"),
+                     tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "Data provided by JHU CSSE", target="_blank"),
                      br(),
-                     "Source data updates everyday."
+                     "Last updated: ",
+                     br(),
+                     paste0(lubridate::now(), " UTC")
                    )
                )
         )
