@@ -236,6 +236,38 @@ function(input, output, session) {
                       title = "log(Cases)",
                       opacity = 0.6
             )
-        
     })
+    
+    output$trendPlots <- renderPlot({
+      targetBar <- c("Australia",   
+                     "Austria",
+                     "Canada",
+                     "China",
+                     "France",
+                     "Germany",
+                     "Hong Kong",
+                     "Iran",
+                     "Italy",
+                     "Japan",
+                     "Kuwait",
+                     "Malaysia",
+                     "Netherlands",
+                     "Singapore",
+                     "South Korea",
+                     "Spain",
+                     "United Kingdom",
+                     "United States")
+      
+      # plottting the bar chart
+      barChartDataAcceleration <- covidAcceleration %>% filter (name %in% targetBar & !is.na(threeDayAcceleration))
+      ggplot(data = barChartDataAcceleration) +
+        geom_col(aes(y = threeDayAcceleration, x = reorder(name, threeDayAcceleration), fill=threeDayAcceleration)) +
+        scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
+        coord_flip() + xlab ("") + ylab ("acceleration") + 
+        ggtitle("Acceleration of Reported COVID-19 Cases") +
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        theme_tufte()
+    })
+    
+
 }

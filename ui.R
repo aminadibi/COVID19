@@ -14,6 +14,9 @@ sidebar <-    dashboardSidebar(
 )
 
 body <- dashboardBody(
+    tabItems(
+        # First tab content
+  tabItem(tabName = "dashboard",
     fluidRow(
         column(width = 9,
                box(width = NULL, solidHeader = TRUE,
@@ -42,8 +45,14 @@ body <- dashboardBody(
                    )
                )
         )
-    )
-)
+    )),
+    
+    tabItem(tabName = "trends",
+            fluidRow(
+                box(plotOutput("trendPlots", height = 250)),
+            )
+)))
+
 
 dashboardPage(
     header,
