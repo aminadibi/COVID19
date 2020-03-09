@@ -10,6 +10,7 @@ library(ggthemes)
 library(rgeos)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(rmapshaper)
 
 
 function(input, output, session) {
@@ -30,7 +31,7 @@ function(input, output, session) {
       # merging datasets and plotting the map of Coronavirus
       results$Acceleration <- covidAcceleration
       
-      world <- ne_countries(scale = "medium", returnclass = "sf")
+      world <- ms_simplify(ne_countries(scale = "medium", returnclass = "sf"))
       
       covidAccelerationWorld <- world %>% left_join(covidAcceleration)
       
