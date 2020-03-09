@@ -7,7 +7,7 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 library(ggthemes)
-#library(sf)
+library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
 
