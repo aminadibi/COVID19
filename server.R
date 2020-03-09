@@ -9,7 +9,7 @@ library(lubridate)
 library(ggthemes)
 #library(sf)
 library(rnaturalearth)
-#library(rnaturalearthdata)
+library(rnaturalearthdata)
 
 
 function(input, output, session) {
