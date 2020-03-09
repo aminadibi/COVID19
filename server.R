@@ -1,11 +1,15 @@
 library(shinydashboard)
 library(leaflet)
-library(tidyverse)
+#library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
 library(lubridate)
 library(ggthemes)
-library(sf)
+#library(sf)
 library(rnaturalearth)
-library(rnaturalearthdata)
+#library(rnaturalearthdata)
 
 
 function(input, output, session) {
@@ -15,61 +19,66 @@ function(input, output, session) {
       covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>% group_by(name) %>%
         summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
         mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
-      return(covidCases)
-    })
-
-    output$numVehiclesTable <- renderUI({
-        locations <- routeVehicleLocations()
-        if (length(locations) == 0 || nrow(locations) == 0)
-            return(NULL)
-        
-        # Create a Bootstrap-styled table
-        tags$table(class = "table",
-                   tags$thead(tags$tr(
-                       tags$th("Color"),
-                       tags$th("Direction"),
-                       tags$th("Number of vehicles")
-                   )),
-                   tags$tbody(
-                       tags$tr(
-                           tags$td(span(style = sprintf(
-                               "width:1.1em; height:1.1em; background-color:%s; display:inline-block;",
-                               dirColors[4]
-                           ))),
-                           tags$td("Northbound"),
-                           tags$td(nrow(locations[locations$Direction == "4",]))
-                       ),
-                       tags$tr(
-                           tags$td(span(style = sprintf(
-                               "width:1.1em; height:1.1em; background-color:%s; display:inline-block;",
-                               dirColors[1]
-                           ))),
-                           tags$td("Southbound"),
-                           tags$td(nrow(locations[locations$Direction == "1",]))
-                       ),
-                       tags$tr(
-                           tags$td(span(style = sprintf(
-                               "width:1.1em; height:1.1em; background-color:%s; display:inline-block;",
-                               dirColors[2]
-                           ))),
-                           tags$td("Eastbound"),
-                           tags$td(nrow(locations[locations$Direction == "2",]))
-                       ),
-                       tags$tr(
-                           tags$td(span(style = sprintf(
-                               "width:1.1em; height:1.1em; background-color:%s; display:inline-block;",
-                               dirColors[3]
-                           ))),
-                           tags$td("Westbound"),
-                           tags$td(nrow(locations[locations$Direction == "3",]))
-                       ),
-                       tags$tr(class = "active",
-                               tags$td(),
-                               tags$td("Total"),
-                               tags$td(nrow(locations))
-                       )
-                   )
-        )
+      results <- list()
+      results$covidCases <- covidCases
+      
+      
+      covidAcceleration <- derivative(derivative(covidCases))
+      
+      # averaging acceleration over the past 3 days
+      covidAcceleration[, "threeDayAcceleration"] <- as.vector((covidAcceleration[length(covidAcceleration)] + covidAcceleration[length(covidAcceleration)-1] + covidAcceleration[length(covidAcceleration)-2])/3)
+      # merging datasets and plotting the map of Coronavirus
+      results$Acceleration <- covidAcceleration
+      
+      world <- ne_countries(scale = "medium", returnclass = "sf")
+      
+      covidAccelerationWorld <- world %>% left_join(covidAcceleration)
+      
+      results$covidAccelerationWorld <- covidAccelerationWorld
+      
+      
+      covidRate         <- derivative(covidCases)
+      covidRate[, "threeDayRate"] <- as.vector((covidRate[length(covidRate)] + covidRate[length(covidRate)-1] + covidRate[length(covidRate)-2])/3)
+      
+      # merging datasets and plotting the map of Coronavirus
+      covidRateWorld <- world %>% left_join(covidRate)
+      results$covidRateWorld <- covidRateWorld
+      
+      covidCases[, "Cases"] <- as.vector(log(covidCases[length(covidCases)]))
+      
+      # merging datasets and plotting the map of Coronavirus
+      covidCasesWorld <- world %>% left_join(covidCases)
+      results$covidCasesWorld  <- covidCasesWorld 
+      
+      targetBar <- c("Australia",   
+                     "Austria",
+                     "Canada",
+                     "China",
+                     "France",
+                     "Germany",
+                     "Hong Kong",
+                     "Iran",
+                     "Italy",
+                     "Japan",
+                     "Kuwait",
+                     "Malaysia",
+                     "Netherlands",
+                     "Singapore",
+                     "South Korea",
+                     "Spain",
+                     "United Kingdom",
+                     "United States")
+      
+      # plottting the bar chart
+      barChartDataAcceleration <- covidAcceleration %>% filter (name %in% targetBar & !is.na(threeDayAcceleration))
+      
+      results$barChartDataAcceleration <- barChartDataAcceleration
+      
+      barChartDataRate <- covidRate %>% filter (name %in% targetBar & !is.na(threeDayRate))
+      results$barChartDataRate<- barChartDataRate
+      
+      
+      return(results)
     })
     
     # Store last zoom button value so we can detect when it's clicked
@@ -86,18 +95,7 @@ function(input, output, session) {
     
     output$accelerationMap <- renderLeaflet({
         
-        covidCases <- getData()
-
-        covidAcceleration <- derivative(derivative(covidCases))
-        
-        # averaging acceleration over the past 3 days
-        covidAcceleration[, "threeDayAcceleration"] <- as.vector((covidAcceleration[length(covidAcceleration)] + covidAcceleration[length(covidAcceleration)-1] + covidAcceleration[length(covidAcceleration)-2])/3)
-        
-        # merging datasets and plotting the map of Coronavirus
-        world <- ne_countries(scale = "medium", returnclass = "sf")
-        
-        covidAccelerationWorld <- world %>% left_join(covidAcceleration)
-        
+        covidAccelerationWorld <- getData()$covidAccelerationWorld
         
         #leaflet map itself
         covidAccelerationWorldLeaf <- covidAccelerationWorld %>% filter (!is.na(threeDayAcceleration))
@@ -133,7 +131,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayAcceleration,
                       title = "Acceleration",
                       opacity = 0.6
-            )
+            ) %>% setView(32, 53, zoom = 1.2)
         
         # rezoom <- "first"
         # # If zoom button was clicked this time, and store the value, and rezoom
@@ -148,14 +146,8 @@ function(input, output, session) {
     })
     
     output$rateMap <- renderLeaflet({
-        
-        covidCases <- getData()
-        covidRate         <- derivative(covidCases)
-        covidRate[, "threeDayRate"] <- as.vector((covidRate[length(covidRate)] + covidRate[length(covidRate)-1] + covidRate[length(covidRate)-2])/3)
-        
-        # merging datasets and plotting the map of Coronavirus
-        world <- ne_countries(scale = "medium", returnclass = "sf")
-        covidRateWorld <- world %>% left_join(covidRate)
+
+        covidRateWorld <- getData()$covidRateWorld
         covidRateWorldLeaf <- covidRateWorld %>% filter (!is.na(threeDayRate))
         map <- leaflet(data = covidRateWorldLeaf) %>%
             addTiles() %>%  # Add default OpenStreetMap map tiles
@@ -189,19 +181,14 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayRate,
                       title = "Rate",
                       opacity = 0.6
-            )
+            )  %>% setView(32, 53, zoom = 1.2)
       
     })
     
     
     output$caseMap <- renderLeaflet({
-        
-        covidCases <- getData()
-        covidCases[, "Cases"] <- as.vector(log(covidCases[length(covidCases)]))
-        
-        # merging datasets and plotting the map of Coronavirus
-        world <- ne_countries(scale = "medium", returnclass = "sf")
-        covidCasesWorld <- world %>% left_join(covidCases)
+
+        covidCasesWorld <- getData()$covidCasesWorld 
         covidCasesWorldLeaf <- covidCasesWorld %>% filter (!is.na(Cases))
         map <- leaflet(data = covidCasesWorldLeaf) %>%
             addTiles() %>%  # Add default OpenStreetMap map tiles
@@ -235,31 +222,12 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~Cases,
                       title = "log(Cases)",
                       opacity = 0.6
-            )
+            )  %>% setView(32, 53, zoom = 1.2)
     })
     
-    output$trendPlots <- renderPlot({
-      targetBar <- c("Australia",   
-                     "Austria",
-                     "Canada",
-                     "China",
-                     "France",
-                     "Germany",
-                     "Hong Kong",
-                     "Iran",
-                     "Italy",
-                     "Japan",
-                     "Kuwait",
-                     "Malaysia",
-                     "Netherlands",
-                     "Singapore",
-                     "South Korea",
-                     "Spain",
-                     "United Kingdom",
-                     "United States")
+    output$barPlotAcceleration <- renderPlot({
       
-      # plottting the bar chart
-      barChartDataAcceleration <- covidAcceleration %>% filter (name %in% targetBar & !is.na(threeDayAcceleration))
+      barChartDataAcceleration <- getData()$barChartDataAcceleration
       ggplot(data = barChartDataAcceleration) +
         geom_col(aes(y = threeDayAcceleration, x = reorder(name, threeDayAcceleration), fill=threeDayAcceleration)) +
         scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
@@ -267,6 +235,82 @@ function(input, output, session) {
         ggtitle("Acceleration of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
         theme_tufte()
+    })
+    
+    output$barPlotRate <- renderPlot({
+
+      # plottting the bar chart
+      barChartDataRate <- getData()$barChartDataRate
+      ggplot(data = barChartDataRate) +
+        geom_col(aes(y = threeDayRate, x = reorder(name, threeDayRate), fill=threeDayRate)) +
+        scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
+        coord_flip() + xlab ("") + ylab ("Rate") + 
+        ggtitle("Rate of Reported COVID-19 Cases") +
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        theme_tufte()
+    })
+    
+    
+    output$trendPlotAcceleration <- renderPlot({
+      
+      # Plotting accelration over time
+     
+      targetLine <- c("Canada", 
+                      "China",
+                      "France",
+                      "Iran",
+                      "Italy",
+                      "South Korea",
+                      "United States")
+      
+      rollingAvg <- function(data) {
+        for (i in 1:dim(data)[1]) {
+          for (j in length(data):4){
+            data[i, j] <- as.numeric(((data[i, j] + data[i, j-1] + data[i, j-2])/3))
+          }  
+        }
+        return(data)
+      } 
+      
+      lineDataAcceleration <- rollingAvg(getData()$barChartDataAcceleration) %>% select(-threeDayAcceleration) %>% pivot_longer(cols = -1, names_to = "date", values_to = "acceleration") %>% mutate(date=mdy(date)) %>%filter(date>"2020-02-21" & name %in% targetLine)
+      
+      ggplot(data = lineDataAcceleration, aes(x=date, y=acceleration, colour = name)) +
+        geom_line(size=1) + xlab ("") + ylab ("cases/day^2") +
+        ggtitle("Acceleration of Reported COVID-19 Cases") + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        theme_tufte() +
+        theme(legend.title=element_blank()) 
+      
+    })
+    
+    output$trendPlotRate <- renderPlot({
+      
+      targetLine <- c("Canada", 
+                      "China",
+                      "France",
+                      "Iran",
+                      "Italy",
+                      "South Korea",
+                      "United States")
+      
+      rollingAvg <- function(data) {
+        for (i in 1:dim(data)[1]) {
+          for (j in length(data):4){
+            data[i, j] <- as.numeric(((data[i, j] + data[i, j-1] + data[i, j-2])/3))
+          }  
+        }
+        return(data)
+      } 
+      
+      lineDataRate <- rollingAvg(getData()$barChartDataRate) %>% select(-threeDayRate) %>% pivot_longer(cols = -1, names_to = "date", values_to = "Rate") %>% mutate(date=mdy(date)) %>%filter(date>"2020-02-21" & name %in% targetLine)
+      
+      ggplot(data = lineDataRate, aes(x=date, y=Rate, colour = name)) +
+        geom_line(size=1) + xlab ("") + ylab ("cases/day") +
+        ggtitle("Rate of Reported COVID-19 Cases") + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        theme_tufte() + 
+        theme(legend.title=element_blank())
+      
     })
     
 

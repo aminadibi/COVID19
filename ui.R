@@ -8,8 +8,9 @@ header <- dashboardHeader(
 sidebar <-    dashboardSidebar(
     sidebarMenu(
         menuItem("Latest Maps", tabName = "dashboard"),
-        menuItem("Trends", tabName = "trends"),
-        menuItem("Raw data", tabName = "rawdata")
+        menuItem("Bars", tabName = "bars"),
+        menuItem("Trends", tabName = "trends")
+#        menuItem("Raw data", tabName = "rawdata")
     )
 )
 
@@ -47,11 +48,20 @@ body <- dashboardBody(
         )
     )),
     
-    tabItem(tabName = "trends",
+    tabItem(tabName = "bars",
             fluidRow(
-                box(plotOutput("trendPlots", height = 250)),
-            )
-)))
+                box(width = NULL, solidHeader = TRUE,
+                    plotOutput("barPlotRate", height = 500),
+                    plotOutput("barPlotAcceleration", height = 500)),
+            )),
+  
+  tabItem(tabName = "trends",
+          fluidRow(
+              box(width = NULL, solidHeader = TRUE,
+                  plotOutput("trendPlotRate", height = 500),
+                  plotOutput("trendPlotAcceleration", height = 500)),
+          ))
+  ))
 
 
 dashboardPage(
