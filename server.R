@@ -31,7 +31,7 @@ function(input, output, session) {
       # merging datasets and plotting the map of Coronavirus
       results$Acceleration <- covidAcceleration
       
-      world <- ms_simplify(ne_countries(scale = "medium", returnclass = "sf"))
+      world <- ne_countries(scale = "medium", returnclass = "sf")
       
       covidAccelerationWorld <- world %>% left_join(covidAcceleration)
       
