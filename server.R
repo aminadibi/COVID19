@@ -11,6 +11,7 @@ library(rgeos)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(rmapshaper)
+library(scales)
 
 
 function(input, output, session) {
@@ -77,6 +78,9 @@ function(input, output, session) {
       
       barChartDataRate <- covidRate %>% filter (name %in% targetBar & !is.na(threeDayRate))
       results$barChartDataRate<- barChartDataRate
+      
+      barChartDataCases <- covidCases %>% filter (name %in% targetBar & !is.na(Cases))
+      results$barChartDataCases <- barChartDataCases
       
       
       return(results)
@@ -238,6 +242,9 @@ function(input, output, session) {
         theme_tufte()
     })
     
+    
+    
+    
     output$barPlotRate <- renderPlot({
 
       # plottting the bar chart
@@ -309,6 +316,35 @@ function(input, output, session) {
         geom_line(size=1) + xlab ("") + ylab ("cases/day") +
         ggtitle("Rate of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
+        theme_tufte() + 
+        theme(legend.title=element_blank())
+      
+    })
+    
+    
+    output$trendPlotCases <- renderPlot({
+      
+      targetLine <- c("Canada", 
+                      "China",
+                      "France",
+                      "Iran",
+                      "Italy",
+                      "South Korea",
+                      "United States")
+      
+  
+      lineDataCases <- getData()$barChartDataCases %>% select(-Cases) %>% 
+        pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>% 
+        mutate(date=mdy(date)) %>%filter(date>"2020-02-18" & name %in% targetLine)
+      
+      ggplot(data = lineDataCases, aes(x=date, y=Cases, colour = name)) +
+        geom_line(size=1) + xlab ("") + ylab ("cases") +
+        ggtitle("Reported COVID-19 Cases") + 
+        labs(caption = paste0("(as of ", lubridate::now(), " UTC)")) + 
+        coord_trans(y="log") +
+        scale_y_continuous(trans = log10_trans(),
+                           breaks = trans_breaks("log10", function(x) 10^x),
+                           labels = trans_format("log10", math_format(10^.x))) +
         theme_tufte() + 
         theme(legend.title=element_blank())
       

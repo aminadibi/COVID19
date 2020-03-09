@@ -59,6 +59,7 @@ body <- dashboardBody(
   tabItem(tabName = "trends",
           fluidRow(
               box(width = NULL, solidHeader = TRUE,
+                  plotOutput("trendPlotCases", height = 500),
                   plotOutput("trendPlotRate", height = 500),
                   plotOutput("trendPlotAcceleration", height = 500)),
           ))
