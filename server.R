@@ -7,7 +7,7 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 library(ggthemes)
-library(sf)
+library(rgeos)
 library(rnaturalearth)
 library(rnaturalearthdata)
 
@@ -233,7 +233,7 @@ function(input, output, session) {
         scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("acceleration") + 
         ggtitle("Acceleration of Reported COVID-19 Cases") +
-        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
     
@@ -246,7 +246,7 @@ function(input, output, session) {
         scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("Rate") + 
         ggtitle("Rate of Reported COVID-19 Cases") +
-        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
     
@@ -277,7 +277,7 @@ function(input, output, session) {
       ggplot(data = lineDataAcceleration, aes(x=date, y=acceleration, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day^2") +
         ggtitle("Acceleration of Reported COVID-19 Cases") + 
-        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte() +
         theme(legend.title=element_blank()) 
       
@@ -307,7 +307,7 @@ function(input, output, session) {
       ggplot(data = lineDataRate, aes(x=date, y=Rate, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day") +
         ggtitle("Rate of Reported COVID-19 Cases") + 
-        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " PST)")) + 
+        labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte() + 
         theme(legend.title=element_blank())
       
