@@ -273,10 +273,15 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
       
       rollingAvg <- function(data) {
         for (i in 1:dim(data)[1]) {
@@ -293,6 +298,7 @@ function(input, output, session) {
         geom_line(size=1) + xlab ("") + ylab ("cases/day^2") +
         ggtitle("Acceleration of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() +
         theme(legend.title=element_blank()) 
       
@@ -303,10 +309,15 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
       
       rollingAvg <- function(data) {
         for (i in 1:dim(data)[1]) {
@@ -323,6 +334,7 @@ function(input, output, session) {
         geom_line(size=1) + xlab ("") + ylab ("cases/day") +
         ggtitle("Rate of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.title=element_blank())
       
@@ -334,12 +346,16 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
       
-  
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+      
       lineDataCases <- getData()$barChartDataCases %>% select(-Cases) %>% 
         pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>% 
         mutate(date=mdy(date)) %>%filter(date>"2020-02-18" & name %in% targetLine)
@@ -352,6 +368,7 @@ function(input, output, session) {
         scale_y_continuous(trans = log10_trans(),
                            breaks = trans_breaks("log10", function(x) 10^x),
                            labels = trans_format("log10", math_format(10^.x))) +
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.title=element_blank())
       
