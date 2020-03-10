@@ -252,12 +252,13 @@ function(input, output, session) {
     
     
     output$barPlotRate <- renderPlot({
-
+      
       # plottting the bar chart
       barChartDataRate <- getData()$barChartDataRate
+      
       ggplot(data = barChartDataRate) +
         geom_col(aes(y = threeDayRate, x = reorder(name, threeDayRate), fill=threeDayRate)) +
-        scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
+        scale_fill_distiller(type = "div", palette = "RdYlBu", aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("Rate") + 
         ggtitle("Rate of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
