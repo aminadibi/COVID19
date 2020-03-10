@@ -39,11 +39,12 @@ body <- dashboardBody(
                    #uiOutput("timeSinceLastUpdate"),
                    p(class = "text-muted",
                      br(),
-                     tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "Data provided by JHU CSSE", target="_blank"),
+                     "Data by ", tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "JHU CSSE", target="_blank"),
                      br(),
-                     "Last updated: ",
+                     paste0("Last updated: ", lubridate::now(), " UTC"),
                      br(),
-                     paste0(lubridate::now(), " UTC")
+                     br(),
+                     "Visualization by ", tags$a(href="http://www.shefa.ca", "Shefa Analytics", target="_blank")
                    )
                )
         )
