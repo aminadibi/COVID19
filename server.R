@@ -7,10 +7,9 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 library(ggthemes)
-library(rgeos)
+#library(rgeos)
 library(rnaturalearth)
 library(rnaturalearthdata)
-library(rmapshaper)
 library(scales)
 library(RColorBrewer)
 
@@ -33,7 +32,8 @@ function(input, output, session) {
       # merging datasets and plotting the map of Coronavirus
       results$Acceleration <- covidAcceleration
       
-      world <- ne_countries(scale = "medium", returnclass = "sf")
+      #world <- ne_countries(scale = "medium", returnclass = "sf")
+      world <- readRDS("world.rds")
       
       covidAccelerationWorld <- world %>% left_join(covidAcceleration)
       
