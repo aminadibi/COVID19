@@ -1,5 +1,6 @@
 library(shinydashboard)
 library(leaflet)
+library(shinycssloaders)
 
 header <- dashboardHeader(
     title = "COVID-19 Dashboard"
@@ -22,15 +23,15 @@ body <- dashboardBody(
         column(width = 9,
                box(width = NULL, solidHeader = TRUE,
                    title = "Number of Reported Cases",
-                   leafletOutput("caseMap", height = 500),
+                   leafletOutput("caseMap", height = 500) %>% withSpinner(),
                ),
                box(width = NULL, solidHeader = TRUE,
                    title = "Rate of Reported Cases",
-                   leafletOutput("rateMap", height = 500),
+                   leafletOutput("rateMap", height = 500) %>% withSpinner(),
                ),
                box(width = NULL, solidHeader = TRUE,
                    title = "Acceleration of Reported Cases",
-                   leafletOutput("accelerationMap", height = 500),
+                   leafletOutput("accelerationMap", height = 500) %>% withSpinner(),
                )
         ),
         column(width = 3,
@@ -52,16 +53,16 @@ body <- dashboardBody(
     tabItem(tabName = "bars",
             fluidRow(
                 box(width = NULL, solidHeader = TRUE,
-                    plotOutput("barPlotRate", height = 500),
-                    plotOutput("barPlotAcceleration", height = 500)),
+                    plotOutput("barPlotRate", height = 500) %>% withSpinner(),
+                    plotOutput("barPlotAcceleration", height = 500) %>% withSpinner()),
             )),
   
   tabItem(tabName = "trends",
           fluidRow(
               box(width = NULL, solidHeader = TRUE,
-                  plotOutput("trendPlotCases", height = 500),
-                  plotOutput("trendPlotRate", height = 500),
-                  plotOutput("trendPlotAcceleration", height = 500)),
+                  plotOutput("trendPlotCases", height = 500) %>% withSpinner(),
+                  plotOutput("trendPlotRate", height = 500) %>% withSpinner(),
+                  plotOutput("trendPlotAcceleration", height = 500) %>% withSpinner()),
           ))
   ))
 
