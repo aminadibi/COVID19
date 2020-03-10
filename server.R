@@ -12,6 +12,7 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(rmapshaper)
 library(scales)
+library(RColorBrewer)
 
 
 function(input, output, session) {
@@ -109,9 +110,14 @@ function(input, output, session) {
             addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
         
         # Create a continuous palette function
+        clrs <- rev(brewer.pal(11, "RdBu"))
+        scale_range <- c(-1, 1) * max(abs(covidAccelerationWorldLeaf$threeDayAcceleration))
+         
+        
         pal <- colorNumeric(
-            palette = "YlOrRd",
-            domain = covidAccelerationWorld$threeDayAcceleration)
+            palette = clrs,
+           # domain = covidAccelerationWorld$threeDayAcceleration)
+           domain = scale_range)
         
         # Apply the function to provide RGB colors to addPolygons
         labels <- sprintf(
@@ -235,7 +241,7 @@ function(input, output, session) {
       barChartDataAcceleration <- getData()$barChartDataAcceleration
       ggplot(data = barChartDataAcceleration) +
         geom_col(aes(y = threeDayAcceleration, x = reorder(name, threeDayAcceleration), fill=threeDayAcceleration)) +
-        scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
+        scale_fill_distiller(type = "div", palette = "RdBu",  limits = c(-1, 1) * max(abs(barChartDataAcceleration$threeDayAcceleration)), aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("acceleration") + 
         ggtitle("Acceleration of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
