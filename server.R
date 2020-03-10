@@ -142,7 +142,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayAcceleration,
                       title = "Acceleration",
                       opacity = 0.6
-            ) %>% setView(32, 53, zoom = 1.2)
+            ) %>% setView(32, 20, zoom = 1.6)
         
         # rezoom <- "first"
         # # If zoom button was clicked this time, and store the value, and rezoom
@@ -192,7 +192,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayRate,
                       title = "Rate",
                       opacity = 0.6
-            )  %>% setView(32, 53, zoom = 1.2)
+            )  %>% setView(32, 20, zoom = 1.6)
       
     })
     
@@ -233,7 +233,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~Cases,
                       title = "log(Cases)",
                       opacity = 0.6
-            )  %>% setView(32, 53, zoom = 1.2)
+            )  %>% setView(32, 20, zoom = 1.6)
     })
     
     output$barPlotAcceleration <- renderPlot({
