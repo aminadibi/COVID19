@@ -7,10 +7,9 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 library(ggthemes)
-library(rgeos)
+#library(rgeos)
 library(rnaturalearth)
 library(rnaturalearthdata)
-library(rmapshaper)
 library(scales)
 library(RColorBrewer)
 
@@ -19,7 +18,18 @@ function(input, output, session) {
     
     getData <-  reactive({
       time_series_19_covid_Confirmed <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
-      covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>% group_by(name) %>%
+      covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>%
+        mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
+        mutate(name = replace(name, name == "Iran (Islamic Republic of)", "Iran")) %>%
+        mutate(name = replace(name, name =="Republic of Korea", "South Korea")) %>%
+        mutate(name = replace(name, name ==    "Republic of Moldova", "Moldova")) %>%
+        mutate(name = replace(name, name ==    "Russian Federation", "Russia")) %>%
+        mutate(name = replace(name, name ==    "Saint Martin", "St. Martin")) %>%
+        mutate(name = replace(name, name ==    "Taipei and environs", "Taiwan")) %>%
+        mutate(name = replace(name, name ==    "Viet Nam", "Vietnam")) %>%
+        mutate(name = replace(name, name ==    "occupied Palestinian territory", "Palestine")) %>%
+        mutate(name = replace(name, name ==     "Vatican City", "Holy See")) %>%
+        group_by(name) %>%
         summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
         mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
       results <- list()
@@ -33,7 +43,8 @@ function(input, output, session) {
       # merging datasets and plotting the map of Coronavirus
       results$Acceleration <- covidAcceleration
       
-      world <- ne_countries(scale = "medium", returnclass = "sf")
+      #world <- ne_countries(scale = "medium", returnclass = "sf")
+      world <- readRDS("world.rds")
       
       covidAccelerationWorld <- world %>% left_join(covidAcceleration)
       
@@ -142,7 +153,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayAcceleration,
                       title = "Acceleration",
                       opacity = 0.6
-            ) %>% setView(32, 53, zoom = 1.2)
+            ) %>% setView(32, 20, zoom = 1.6)
         
         # rezoom <- "first"
         # # If zoom button was clicked this time, and store the value, and rezoom
@@ -192,7 +203,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~threeDayRate,
                       title = "Rate",
                       opacity = 0.6
-            )  %>% setView(32, 53, zoom = 1.2)
+            )  %>% setView(32, 20, zoom = 1.6)
       
     })
     
@@ -233,7 +244,7 @@ function(input, output, session) {
             addLegend("bottomright", pal = pal, values = ~Cases,
                       title = "log(Cases)",
                       opacity = 0.6
-            )  %>% setView(32, 53, zoom = 1.2)
+            )  %>% setView(32, 20, zoom = 1.6)
     })
     
     output$barPlotAcceleration <- renderPlot({
@@ -243,7 +254,7 @@ function(input, output, session) {
         geom_col(aes(y = threeDayAcceleration, x = reorder(name, threeDayAcceleration), fill=threeDayAcceleration)) +
         scale_fill_distiller(type = "div", palette = "RdBu",  limits = c(-1, 1) * max(abs(barChartDataAcceleration$threeDayAcceleration)), aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("acceleration") + 
-        ggtitle("Acceleration of Reported COVID-19 Cases") +
+        #ggtitle("Acceleration of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
@@ -252,14 +263,15 @@ function(input, output, session) {
     
     
     output$barPlotRate <- renderPlot({
-
+      
       # plottting the bar chart
       barChartDataRate <- getData()$barChartDataRate
+      
       ggplot(data = barChartDataRate) +
         geom_col(aes(y = threeDayRate, x = reorder(name, threeDayRate), fill=threeDayRate)) +
-        scale_fill_distiller(type = "div", palette = "RdBu", aesthetics = "fill")+
+        scale_fill_distiller(type = "div", palette = "RdYlBu", aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("Rate") + 
-        ggtitle("Rate of Reported COVID-19 Cases") +
+       # ggtitle("Rate of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
@@ -272,10 +284,15 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
       
       rollingAvg <- function(data) {
         for (i in 1:dim(data)[1]) {
@@ -290,8 +307,9 @@ function(input, output, session) {
       
       ggplot(data = lineDataAcceleration, aes(x=date, y=acceleration, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day^2") +
-        ggtitle("Acceleration of Reported COVID-19 Cases") + 
+       # ggtitle("Acceleration of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() +
         theme(legend.title=element_blank()) 
       
@@ -302,10 +320,15 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
       
       rollingAvg <- function(data) {
         for (i in 1:dim(data)[1]) {
@@ -320,8 +343,9 @@ function(input, output, session) {
       
       ggplot(data = lineDataRate, aes(x=date, y=Rate, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day") +
-        ggtitle("Rate of Reported COVID-19 Cases") + 
+      #  ggtitle("Rate of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.title=element_blank())
       
@@ -333,24 +357,29 @@ function(input, output, session) {
       targetLine <- c("Canada", 
                       "China",
                       "France",
+                      "Germany",
                       "Iran",
                       "Italy",
                       "South Korea",
                       "United States")
       
-  
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+      
       lineDataCases <- getData()$barChartDataCases %>% select(-Cases) %>% 
         pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>% 
         mutate(date=mdy(date)) %>%filter(date>"2020-02-18" & name %in% targetLine)
       
       ggplot(data = lineDataCases, aes(x=date, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases") +
-        ggtitle("Reported COVID-19 Cases") + 
+      #  ggtitle("Reported COVID-19 Cases") + 
         labs(caption = paste0("(as of ", lubridate::now(), " UTC)")) + 
         coord_trans(y="log") +
         scale_y_continuous(trans = log10_trans(),
                            breaks = trans_breaks("log10", function(x) 10^x),
                            labels = trans_format("log10", math_format(10^.x))) +
+        scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.title=element_blank())
       
