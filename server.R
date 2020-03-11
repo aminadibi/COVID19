@@ -254,7 +254,7 @@ function(input, output, session) {
         geom_col(aes(y = threeDayAcceleration, x = reorder(name, threeDayAcceleration), fill=threeDayAcceleration)) +
         scale_fill_distiller(type = "div", palette = "RdBu",  limits = c(-1, 1) * max(abs(barChartDataAcceleration$threeDayAcceleration)), aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("acceleration") + 
-        ggtitle("Acceleration of Reported COVID-19 Cases") +
+        #ggtitle("Acceleration of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
@@ -271,7 +271,7 @@ function(input, output, session) {
         geom_col(aes(y = threeDayRate, x = reorder(name, threeDayRate), fill=threeDayRate)) +
         scale_fill_distiller(type = "div", palette = "RdYlBu", aesthetics = "fill")+
         coord_flip() + xlab ("") + ylab ("Rate") + 
-        ggtitle("Rate of Reported COVID-19 Cases") +
+       # ggtitle("Rate of Reported COVID-19 Cases") +
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         theme_tufte()
     })
@@ -307,7 +307,7 @@ function(input, output, session) {
       
       ggplot(data = lineDataAcceleration, aes(x=date, y=acceleration, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day^2") +
-        ggtitle("Acceleration of Reported COVID-19 Cases") + 
+       # ggtitle("Acceleration of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         scale_colour_manual(values=colourBlindPal) +
         theme_tufte() +
@@ -343,7 +343,7 @@ function(input, output, session) {
       
       ggplot(data = lineDataRate, aes(x=date, y=Rate, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases/day") +
-        ggtitle("Rate of Reported COVID-19 Cases") + 
+      #  ggtitle("Rate of Reported COVID-19 Cases") + 
         labs(caption = paste0("(Rolling 3-day average as of ", lubridate::now(), " UTC)")) + 
         scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
@@ -373,7 +373,7 @@ function(input, output, session) {
       
       ggplot(data = lineDataCases, aes(x=date, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("") + ylab ("cases") +
-        ggtitle("Reported COVID-19 Cases") + 
+      #  ggtitle("Reported COVID-19 Cases") + 
         labs(caption = paste0("(as of ", lubridate::now(), " UTC)")) + 
         coord_trans(y="log") +
         scale_y_continuous(trans = log10_trans(),

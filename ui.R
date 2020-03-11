@@ -27,10 +27,12 @@ body <- dashboardBody(
                ),
                box(width = NULL, solidHeader = TRUE,
                    title = "Rate of Reported Cases (case/day)",
+                   tags$div(HTML(paste(" ", tags$small("Rolling 3-day average"), sep = ""))),
                    leafletOutput("rateMap", height = 500) %>% withSpinner(),
                ),
                box(width = NULL, solidHeader = TRUE,
                    title = tags$div(HTML(paste("Acceleration of Reported Cases (case/day", tags$sup(2), ")", sep = ""))),
+                   tags$div(HTML(paste(" ", tags$small("Rolling 3-day average"), sep = ""))),
                    leafletOutput("accelerationMap", height = 500) %>% withSpinner(),
                )
         ),
@@ -62,15 +64,23 @@ body <- dashboardBody(
     tabItem(tabName = "bars",
             fluidRow(
                 box(width = NULL, solidHeader = TRUE,
-                    plotOutput("barPlotRate", height = 500) %>% withSpinner(),
+                    title = "Rate of Reported Cases (case/day)",
+                    plotOutput("barPlotRate", height = 500) %>% withSpinner()),
+                box(width = NULL, solidHeader = TRUE,
+                    title = tags$div(HTML(paste("Acceleration of Reported Cases (case/day", tags$sup(2), ")", sep = ""))),
                     plotOutput("barPlotAcceleration", height = 500) %>% withSpinner()),
             )),
   
   tabItem(tabName = "trends",
           fluidRow(
               box(width = NULL, solidHeader = TRUE,
-                  plotOutput("trendPlotCases", height = 500) %>% withSpinner(),
-                  plotOutput("trendPlotRate", height = 500) %>% withSpinner(),
+                  title = "Number of Reported Cases",
+                  plotOutput("trendPlotCases", height = 500) %>% withSpinner()),
+              box(width = NULL, solidHeader = TRUE, 
+                  title = "Rate of Reported Cases (case/day)",
+                  plotOutput("trendPlotRate", height = 500) %>% withSpinner()),
+              box(width = NULL, solidHeader = TRUE,
+                  title = tags$div(HTML(paste("Acceleration of Reported Cases (case/day", tags$sup(2), ")", sep = ""))),
                   plotOutput("trendPlotAcceleration", height = 500) %>% withSpinner()),
           ))
   ))
