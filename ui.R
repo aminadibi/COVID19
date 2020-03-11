@@ -26,11 +26,11 @@ body <- dashboardBody(
                    leafletOutput("caseMap", height = 500) %>% withSpinner(),
                ),
                box(width = NULL, solidHeader = TRUE,
-                   title = "Rate of Reported Cases",
+                   title = "Rate of Reported Cases (case/day)",
                    leafletOutput("rateMap", height = 500) %>% withSpinner(),
                ),
                box(width = NULL, solidHeader = TRUE,
-                   title = "Acceleration of Reported Cases",
+                   title = tags$div(HTML(paste("Acceleration of Reported Cases (case/day", tags$sup(2), ")", sep = ""))),
                    leafletOutput("accelerationMap", height = 500) %>% withSpinner(),
                )
         ),
