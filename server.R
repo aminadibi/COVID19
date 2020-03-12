@@ -18,7 +18,7 @@ function(input, output, session) {
     
     getData <-  reactive({
       time_series_19_covid_Confirmed <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
-      covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>%
+      covidCases <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region") %>%
         mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
         mutate(name = replace(name, name == "Iran (Islamic Republic of)", "Iran")) %>%
         mutate(name = replace(name, name =="Republic of Korea", "South Korea")) %>%
