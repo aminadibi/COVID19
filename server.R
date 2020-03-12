@@ -12,26 +12,21 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(scales)
 library(RColorBrewer)
-
+library(curl)
+library(readxl)
 
 function(input, output, session) {
     
+  
     getData <-  reactive({
-      time_series_19_covid_Confirmed <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
-      covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>%
-        mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
-        mutate(name = replace(name, name == "Iran (Islamic Republic of)", "Iran")) %>%
-        mutate(name = replace(name, name =="Republic of Korea", "South Korea")) %>%
-        mutate(name = replace(name, name ==    "Republic of Moldova", "Moldova")) %>%
-        mutate(name = replace(name, name ==    "Russian Federation", "Russia")) %>%
-        mutate(name = replace(name, name ==    "Saint Martin", "St. Martin")) %>%
-        mutate(name = replace(name, name ==    "Taipei and environs", "Taiwan")) %>%
-        mutate(name = replace(name, name ==    "Viet Nam", "Vietnam")) %>%
-        mutate(name = replace(name, name ==    "occupied Palestinian territory", "Palestine")) %>%
-        mutate(name = replace(name, name ==     "Vatican City", "Holy See")) %>%
-        group_by(name) %>%
-        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
-        mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
+      #time_series_19_covid_Confirmed <- read_excel("https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide-2020-03-11.xls")
+      tf = tempfile(fileext = ".xls")
+      url <- "https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide-2020-03-11.xls"
+      curl::curl_download(url, tf)
+      covid19 <- readxl::read_excel(tf)
+      covidCases <- covid19  %>% rename (name = "CountryExp") %>% group_by(name) %>%
+        summarise_at(vars(2:3), sum, na.rm = TRUE) 
+      
       results <- list()
       results$covidCases <- covidCases
       
