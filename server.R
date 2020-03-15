@@ -100,6 +100,13 @@ function(input, output, session) {
       return(results)
     })
     
+    output$lastUpdate <- renderText({
+      
+      cases <- getData()$covidCases
+      return (colnames(cases[length(cases)]))
+      
+    })
+    
     # Store last zoom button value so we can detect when it's clicked
     lastZoomButtonValue <- NULL
     

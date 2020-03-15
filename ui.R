@@ -44,7 +44,7 @@ body <- dashboardBody(
                      br(),
                      "Data by ", tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "JHU CSSE", target="_blank"),
                      br(),
-                     "Last updated: ", paste0(lubridate::now(), " UTC"),
+                     "Last updated: ", textOutput("lastUpdate"),
                      br(),
                      "Visuals by", tags$a(href="https://shefa.ca", "Shefa Analytics", target="_blank"),
 
