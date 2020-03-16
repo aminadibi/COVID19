@@ -10,9 +10,9 @@ header <- dashboardHeader(
 sidebar <-    dashboardSidebar(
     sidebarMenu(
         menuItem("Latest Maps", tabName = "dashboard"),
+        menuItem("Epi Curves", tabName = "countries"),
         menuItem("Bars", tabName = "bars"),
-        menuItem("Trends", tabName = "trends"),
-        menuItem("EpiCurves", tabName = "countries")
+        menuItem("Trends", tabName = "trends")
         
 #        menuItem("Raw data", tabName = "rawdata")
     )
@@ -106,8 +106,9 @@ body <- dashboardBody(
             box(width = NULL, solidHeader = TRUE,
                 title = "Epidemic Curve",
                 selectInput("countryInput", "Country",
-                            #choices = c("Iran","South Korea", "China", "Japan", "Canada", "France", "Italy")),
-                            choices = countryNames),
+                            choices = countryNames, selected = "Iran"),
+                selectInput("countryInput2", "Second Country",
+                            choices = countryNames, selected = "Italy"),
                             
                 plotOutput("epiCurve", height = 500) %>% withSpinner()
                 )

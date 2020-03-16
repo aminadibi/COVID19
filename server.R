@@ -571,10 +571,12 @@ function(input, output, session) {
     
     output$epiCurve<- renderPlot({
       targetCountry <- input$countryInput
-      epicCurveData <- getData()$covidRate %>% select(-threeDayRate) %>% pivot_longer(cols = -1, names_to = "date", values_to = "NewCases") %>% mutate(date=mdy(date)) %>%filter(name %in% targetCountry )
+      targetCountry2 <- input$countryInput2
       
-      ggplot (data = epicCurveData, aes(x=date, y=NewCases)) +
-        geom_col(size=1) + xlab ("") + ylab ("cases/day") +
+      epicCurveData <- getData()$covidRate %>% select(-threeDayRate) %>% pivot_longer(cols = -1, names_to = "date", values_to = "NewCases") %>% mutate(date=mdy(date)) %>%filter(name %in% c(targetCountry, targetCountry2) )
+      
+      ggplot (data = epicCurveData, aes(x=date, y=NewCases, fill = name)) +
+        geom_col(size=1, position = "dodge") + xlab ("") + ylab ("cases/day") +
         #scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.title=element_blank())
