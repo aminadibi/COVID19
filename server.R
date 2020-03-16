@@ -59,7 +59,7 @@ function(input, output, session) {
       
       covidRate         <- derivative(covidCases)
       covidRate[, "threeDayRate"] <- as.vector((covidRate[length(covidRate)] + covidRate[length(covidRate)-1] + covidRate[length(covidRate)-2])/3)
-      
+      results$covidRate <- covidRate
       # merging datasets and plotting the map of Coronavirus
       covidRateWorld <- world %>% left_join(covidRate)
       results$covidRateWorld <- covidRateWorld
@@ -569,6 +569,18 @@ function(input, output, session) {
       
     })
     
+    output$epiCurve<- renderPlot({
+      targetCountry <- input$countryInput
+      epicCurveData <- getData()$covidRate %>% select(-threeDayRate) %>% pivot_longer(cols = -1, names_to = "date", values_to = "NewCases") %>% mutate(date=mdy(date)) %>%filter(name %in% targetCountry )
+      
+      ggplot (data = epicCurveData, aes(x=date, y=NewCases)) +
+        geom_col(size=1) + xlab ("") + ylab ("cases/day") +
+        #scale_colour_manual(values=colourBlindPal) +
+        theme_tufte() + 
+        theme(legend.title=element_blank())
+        
+    })
+    
     
     output$trendPlotCases <- renderPlot({
       
@@ -602,6 +614,8 @@ function(input, output, session) {
         theme(legend.title=element_blank())
       
     })
+    
+    
     
 
 }

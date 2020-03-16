@@ -2,6 +2,7 @@ library(shinydashboard)
 library(leaflet)
 library(shinycssloaders)
 
+countryNames <- readRDS("countryNames.rds")
 header <- dashboardHeader(
     title = "COVID-19 Dashboard"
 )
@@ -10,7 +11,9 @@ sidebar <-    dashboardSidebar(
     sidebarMenu(
         menuItem("Latest Maps", tabName = "dashboard"),
         menuItem("Bars", tabName = "bars"),
-        menuItem("Trends", tabName = "trends")
+        menuItem("Trends", tabName = "trends"),
+        menuItem("EpiCurves", tabName = "countries")
+        
 #        menuItem("Raw data", tabName = "rawdata")
     )
 )
@@ -96,6 +99,18 @@ body <- dashboardBody(
               box(width = NULL, solidHeader = TRUE,
                   title = tags$div(HTML(paste("Acceleration of Reported Cases (case/day", tags$sup(2), ")", sep = ""))),
                   plotOutput("trendPlotAcceleration", height = 500) %>% withSpinner()),
+          )),
+  
+  tabItem(tabName = "countries",
+          fluidRow(
+            box(width = NULL, solidHeader = TRUE,
+                title = "Epidemic Curve",
+                selectInput("countryInput", "Country",
+                            #choices = c("Iran","South Korea", "China", "Japan", "Canada", "France", "Italy")),
+                            choices = countryNames),
+                            
+                plotOutput("epiCurve", height = 500) %>% withSpinner()
+                )
           ))
   ))
 
