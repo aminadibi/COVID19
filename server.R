@@ -602,19 +602,22 @@ function(input, output, session) {
       lineDataCases <- getData()$barChartDataCases %>% 
         select(-Cases) %>%  pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
                             filter (Cases>100) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
-                            filter(name %in% targetCompare)
+                            filter(name %in% targetCompare) %>% mutate(days = as.numeric(date)) %>% mutate_if(is.factor, as.character)
       
-      ggplot(data = lineDataCases, aes(x=date, y=Cases, colour = name)) +
+      ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("days since 100 cases") + ylab ("cases") +
-        #  ggtitle("Reported COVID-19 Cases") + 
-        labs(caption = paste0("(as of ", lubridate::now(), " UTC)")) + 
-        # coord_trans(y="log") +
-        # scale_y_continuous(trans = log10_trans(),
-        #                    breaks = trans_breaks("log10", function(x) 10^x),
-        #                    labels = trans_format("log10", math_format(10^.x))) +
+        geom_text(data = lineDataCases %>% filter(date == last(date)), aes(label = name, 
+                                                                     x = days + 1, 
+                                                                     y = Cases, 
+                                                                     color = name)) + 
+         scale_y_continuous(
+                            breaks = seq(0, 50000, by = 5000)) +
         scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
-        theme(legend.title=element_blank())
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) +
+        labs(caption = paste0("(as of ", lubridate::now(), " UTC)"))  
+        
       
     })
     

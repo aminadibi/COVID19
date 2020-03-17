@@ -10,6 +10,7 @@ header <- dashboardHeader(
 sidebar <-    dashboardSidebar(
     sidebarMenu(
         menuItem("Latest Maps", tabName = "dashboard"),
+        menuItem("Compare Growth", tabName = "growth"),
         menuItem("Epi Curves", tabName = "countries"),
         menuItem("Bars", tabName = "bars"),
         menuItem("Trends", tabName = "trends")
@@ -109,10 +110,16 @@ body <- dashboardBody(
                             choices = countryNames, selected = "Iran"),
                 selectInput("countryInput2", "Second Country",
                             choices = countryNames, selected = "Italy"),
-                plotOutput("epiCurve", height = 500) %>% withSpinner(),
+                plotOutput("epiCurve", height = 500) %>% withSpinner())
+          )),
+  
+  tabItem(tabName = "growth",
+          fluidRow(
+            box(width = NULL, solidHeader = TRUE,
+                title = "Growth since 100 cases",
                 plotOutput("compareEpi", height = 500) %>% withSpinner()
                 
-                )
+            )
           ))
   ))
 
