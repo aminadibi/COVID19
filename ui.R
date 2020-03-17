@@ -109,8 +109,9 @@ body <- dashboardBody(
                             choices = countryNames, selected = "Iran"),
                 selectInput("countryInput2", "Second Country",
                             choices = countryNames, selected = "Italy"),
-                            
-                plotOutput("epiCurve", height = 500) %>% withSpinner()
+                plotOutput("epiCurve", height = 500) %>% withSpinner(),
+                plotOutput("compareEpi", height = 500) %>% withSpinner()
+                
                 )
           ))
   ))

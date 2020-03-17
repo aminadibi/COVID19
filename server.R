@@ -583,6 +583,41 @@ function(input, output, session) {
         
     })
     
+    output$compareEpi <- renderPlot({
+      
+      targetCompare <- c("Canada", 
+                      #"China",
+                      "France",
+                      "Spain",
+                      "Germany",
+                      "Iran",
+                      "Italy",
+                      "South Korea",
+                      "United States")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+      
+      lineDataCases <- getData()$barChartDataCases %>% 
+        select(-Cases) %>%  pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
+                            filter (Cases>100) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
+                            filter(name %in% targetCompare)
+      
+      ggplot(data = lineDataCases, aes(x=date, y=Cases, colour = name)) +
+        geom_line(size=1) + xlab ("days since 100 cases") + ylab ("cases") +
+        #  ggtitle("Reported COVID-19 Cases") + 
+        labs(caption = paste0("(as of ", lubridate::now(), " UTC)")) + 
+        # coord_trans(y="log") +
+        # scale_y_continuous(trans = log10_trans(),
+        #                    breaks = trans_breaks("log10", function(x) 10^x),
+        #                    labels = trans_format("log10", math_format(10^.x))) +
+        scale_colour_manual(values=colourBlindPal) +
+        theme_tufte() + 
+        theme(legend.title=element_blank())
+      
+    })
+    
     
     output$trendPlotCases <- renderPlot({
       
