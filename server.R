@@ -1,6 +1,6 @@
 library(shinydashboard)
 library(leaflet)
-#library(tidyverse)
+library(stringr)
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -16,26 +16,16 @@ library(RColorBrewer)
 
 function(input, output, session) {
     
-    
+    data (state)
     getData <- reactive ({
       caseType <- "Confirmed"
       url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-", caseType, ".csv")
       time_series_19_covid_Confirmed <- read_csv(url)
-      covidCases <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region") %>%
-        # mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
-        # mutate(name = replace(name, name == "Iran (Islamic Republic of)", "Iran")) %>%
-
-        # mutate(name = replace(name, name == "Republic of Korea", "South Korea")) %>%
-        # mutate(name = replace(name, name == "Republic of Moldova", "Moldova")) %>%
-        # mutate(name = replace(name, name == "Russian Federation", "Russia")) %>%
-        # mutate(name = replace(name, name ==  "Saint Martin", "St. Martin")) %>%
-        # mutate(name = replace(name, name ==  "Taipei and environs", "Taiwan")) %>%
-        # mutate(name = replace(name, name ==  "Viet Nam", "Vietnam")) %>%
-        # mutate(name = replace(name, name ==  "occupied Palestinian territory", "Palestine")) %>%
-        # mutate(name = replace(name, name ==   "Vatican City", "Holy See")) %>%
-        group_by(name) %>%
-        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
-        mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
+      
+      covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>%
+        filter (name != "US" | (name == "US" & `Province/State` %in% state.name)) %>% group_by(name) %>%
+        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = FALSE)  %>% mutate(name = replace(name, name == "US", "United States"))
+      
         casesUS <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region")  %>%  rename (State = "Province/State")  %>% mutate(name = replace(name, name == "US", "United States")) %>%
                               filter(name == "United States" | name=="Canada")
       results <- list()
@@ -84,7 +74,7 @@ function(input, output, session) {
                      "Malaysia",
                      "Netherlands",
                      "Singapore",
-                     "South Korea",
+                     "Korea, South",
                      "Spain",
                      "United Kingdom",
                      "United States")
@@ -168,7 +158,7 @@ function(input, output, session) {
                      "Malaysia",
                      "Netherlands",
                      "Singapore",
-                     "South Korea",
+                     "Korea, South",
                      "Spain",
                      "United Kingdom",
                      "United States")
@@ -505,7 +495,7 @@ function(input, output, session) {
                       "Germany",
                       "Iran",
                       "Italy",
-                      "South Korea",
+                      "Korea, South",
                       "United States")
       
       # The palette with black:
@@ -541,7 +531,7 @@ function(input, output, session) {
                       "Germany",
                       "Iran",
                       "Italy",
-                      "South Korea",
+                      "Korea, South",
                       "United States")
       
       # The palette with black:
@@ -592,7 +582,9 @@ function(input, output, session) {
                       "Germany",
                       "Iran",
                       "Italy",
-                      "South Korea",
+                      "Korea, South",
+                      "Singapore",
+                      "Japan",
                       "United States")
       
       # The palette with black:
@@ -606,13 +598,13 @@ function(input, output, session) {
       
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("days since 100 cases") + ylab ("cases") +
-        geom_text(data = lineDataCases %>% filter(date == last(date)), aes(label = name, 
+        geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
                                                                      x = days + 1, 
                                                                      y = Cases, 
                                                                      color = name)) + 
          scale_y_continuous(
                             breaks = seq(0, 50000, by = 5000)) +
-        scale_colour_manual(values=colourBlindPal) +
+        #scale_colour_manual(values=colourBlindPal) +
         theme_tufte() + 
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +
@@ -630,7 +622,7 @@ function(input, output, session) {
                       "Germany",
                       "Iran",
                       "Italy",
-                      "South Korea",
+                      "Korea, South",
                       "United States")
       
       # The palette with black:
