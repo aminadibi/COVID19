@@ -54,7 +54,8 @@ function(input, output, session) {
       covidRateWorld <- world %>% left_join(covidRate)
       results$covidRateWorld <- covidRateWorld
       
-      covidCases[, "Cases"] <- as.vector(log(covidCases[length(covidCases)]))
+      covidCases[, "Cases"] <- as.vector(log(covidCases[length(covidCases)])) 
+      covidCases <- covidCases %>% filter(Cases != -Inf)
       
       # merging datasets and plotting the map of Coronavirus
       covidCasesWorld <- world %>% left_join(covidCases)
@@ -420,7 +421,7 @@ function(input, output, session) {
     
     output$caseMap <- renderLeaflet({
       
-      covidCasesWorld <- getData()$covidCasesWorld 
+      covidCasesWorld <- getData()$covidCasesWorld  
       covidCasesWorldLeaf <- covidCasesWorld %>% filter (!is.na(Cases))
       map <- leaflet(data = covidCasesWorldLeaf) %>%
         addTiles() %>%  # Add default OpenStreetMap map tiles
