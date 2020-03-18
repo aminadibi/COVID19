@@ -116,8 +116,10 @@ body <- dashboardBody(
   tabItem(tabName = "growth",
           fluidRow(
             box(width = NULL, solidHeader = TRUE,
-                title = "Growth after 1000 Cases ",
-                plotOutput("compareEpi", height = 500) %>% withSpinner()
+                title = "Comparing Trends ",
+                plotOutput("compareEpi", height = 500) %>% withSpinner(),
+                plotOutput("compareEpiDeath", height = 500) %>% withSpinner()
+                
                 
             )
           ))

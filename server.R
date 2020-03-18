@@ -622,6 +622,53 @@ function(input, output, session) {
     })
     
     
+    output$compareEpiDeath <- renderPlot({
+      
+      targetCompare <- c("Canada", 
+                         "China",
+                         "France",
+                         "Spain",
+                         "Germany",
+                         "Iran",
+                         "Italy",
+                         "Korea, South",
+                         "Singapore",
+                         "Japan",
+                         "United States",
+                         "United Kingdom")
+      
+      # The palette with black:
+      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#009E73",
+                          "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+      
+      lineDataCases <- getDataDeath()$barChartDataCases %>% 
+        select(-Cases) %>%  pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
+        filter (Cases>10) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
+        mutate(days = as.numeric(date)) %>% mutate_if(is.factor, as.character) %>% filter(days <30) # %>% filter(name %in% targetCompare)
+      
+      ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
+        geom_line(size=1) + xlab ("number of days since 10th death") + ylab ("deaths") +
+        geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
+                                                                           x = days + 1, 
+                                                                           y = Cases, 
+                                                                           color = name)) + 
+        # scale_y_continuous(
+        #                    breaks = seq(0, 50000, by = 5000)) +
+        coord_trans(y="log") +
+        scale_y_continuous(trans = log10_trans(),
+                           breaks = c(20, 50, 100, 200, 300, 500, 1000, 5000),
+                           # breaks = trans_breaks("log10", function(x) 10^x),
+                           # labels = trans_format("log10", math_format(10^.x))
+        ) +
+        #scale_colour_manual(values=colourBlindPal) +
+        theme_tufte() + 
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) +
+        labs(caption = paste0("(as of ", lubridate::now(), " UTC)"))  
+      
+      
+    })
+    
     output$trendPlotCases <- renderPlot({
       
       targetLine <- c("Canada", 
