@@ -1,6 +1,7 @@
 library(shinydashboard)
 #library(leaflet)
 library(shinycssloaders)
+library(dplyr)
 
 #countryNames <- readRDS("countryNames.rds")
 header <- dashboardHeader(

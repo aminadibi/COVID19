@@ -503,11 +503,11 @@ function(input, output, session) {
         mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
         
         pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
-        filter (Cases>10) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
+        filter (Cases>=50) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
         mutate(days = as.numeric(date)) #%>% filter(days <30)
       
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.7) + xlab ("\n Number of days since 10th cases") + ylab ("Cases \n") +
+        geom_line(size=0.7) + xlab ("\n Number of days since 50th cases") + ylab ("Cases \n") +
         geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
                                                                      x = days + 0.4, 
                                                                      y = Cases, 
@@ -522,7 +522,7 @@ function(input, output, session) {
                            ) +
         scale_colour_manual(values=colourBlindPal) +
         theme_economist() + 
-        ggtitle("Most provinces are experiencing exponential growth \n", subtitle = "Cumulative number of cases by days since 10th case") +
+        ggtitle("Most provinces are experiencing exponential growth \n", subtitle = "Cumulative number of cases by days since 50th case") +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +
         labs(caption = paste0("(as of ", colnames(cases[length(cases)]), ")"))  
