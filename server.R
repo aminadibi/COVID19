@@ -509,7 +509,7 @@ function(input, output, session) {
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=0.7) + xlab ("\n Number of days since 50th cases") + ylab ("Cases \n") +
         geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
-                                                                     x = days + 0.4, 
+                                                                     x = days + 0.3, 
                                                                      y = Cases, 
                                                                      color = name)) + 
          # scale_y_continuous(
@@ -520,9 +520,15 @@ function(input, output, session) {
                           # breaks = trans_breaks("log10", function(x) 10^x),
                           # labels = trans_format("log10", math_format(10^.x))
                            ) +
+        scale_x_continuous(breaks = c(0:10),
+        ) +
+        annotate("segment", linetype = "longdash", x = 0, xend = 10, y = 50, yend = 866,
+                 colour = "#333333") +
+        annotate(geom = "text", x = 8, y = 550, label = "33% daily increase", color = "#333333",
+                 angle = 25) +
         scale_colour_manual(values=colourBlindPal) +
         theme_economist() + 
-        ggtitle("Most provinces are experiencing exponential growth \n", subtitle = "Cumulative number of cases by days since 50th case") +
+        ggtitle("Alberta and Quebec are about 3 days behind BC and Ontario\nfollowing along a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +
         labs(caption = paste0("(as of ", colnames(cases[length(cases)]), ")"))  
