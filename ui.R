@@ -126,18 +126,13 @@ body <- dashboardBody(
                 #  br(),
                   "Data by ", tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "JHU CSSE", target="_blank"),
                   br(),
-                  "Last updated: ", textOutput("lastUpdate"),
+                #  "Last updated: ", textOutput("lastUpdate"),
                   #br(),
                   "Visuals by", tags$a(href="https://shefa.ca", "Shefa Analytics", target="_blank"), 
-                  
+                  br(),  
+                  "DISCLAIMER: Strictly intended for research and educational purposes. Visuals are based upon publicly available data which may be prone to errors. Should not be used for medical or policy guidance. Shefa Analytics will not be liable to any person or entity for any loss or damages."
                 )   
-                ),
-                box(width = NULL, status = "warning",
-                    #uiOutput("timeSinceLastUpdate"), 
-            p(class = "text-muted",
-             # br(),
-              "DISCLAIMER: Strictly intended for research and educational purposes. Visuals are based upon publicly available data which may be prone to errors. Should not be used for medical or policy guidance. Shefa Analytics will not be liable to any person or entity for any loss or damages."
-            ))
+                )
 
             )
           ))

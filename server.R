@@ -483,6 +483,7 @@ function(input, output, session) {
       # The palette with black:
       colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#0072B2",
                           "#999999", "#D55E00", "#009E73", "#CC79A7")
+      cases <- getData()$covidCases
       
       lineDataCases <- getData()$barChartDataCases %>% 
         select(-Cases) %>% select (-c(country, Lat, Long)) %>% 
@@ -524,7 +525,7 @@ function(input, output, session) {
         ggtitle("Most provinces are experiencing exponential growth \n", subtitle = "Cumulative number of cases by days since 10th case") +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +
-        labs(caption = paste0("(as of ", lubridate::now(), " UTC)"))  
+        labs(caption = paste0("(as of ", colnames(cases[length(cases)]), ")"))  
         
       
     })
