@@ -12,6 +12,7 @@ library(ggthemes)
 # library(rnaturalearthdata)
 library(scales)
 library(RColorBrewer)
+library(ggrepel)
 
 
 function(input, output, session) {
@@ -507,32 +508,32 @@ function(input, output, session) {
         mutate(days = as.numeric(date)) #%>% filter(days <30)
       
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.7) + xlab ("\n Number of days since 50th cases") + ylab ("Cases \n") +
-        geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
-                                                                     x = days + 0.3, 
-                                                                     y = Cases, 
-                                                                     color = name)) + 
-         # scale_y_continuous(
-         #                    breaks = seq(0, 50000, by = 5000)) +
+        geom_line(size=0.7) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+        ylab ("Cases \n") +
+        geom_text_repel(data = lineDataCases %>% 
+                          filter(days == last(days)), aes(label = name, 
+                                                          x = days + 0.2, 
+                                                          y = Cases, 
+                                                          color = name,
+                                                          fontface=2), size = 5) + 
         coord_trans(y="log") +
         scale_y_continuous(trans = log10_trans(),
-                           breaks = c(20, 50, 100, 200, 300, 500, 1000),
-                          # breaks = trans_breaks("log10", function(x) 10^x),
-                          # labels = trans_format("log10", math_format(10^.x))
-                           ) +
-        scale_x_continuous(breaks = c(0:10),
-        ) +
-        annotate("segment", linetype = "longdash", x = 0, xend = 10, y = 50, yend = 866,
+                           breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
+        scale_x_continuous(breaks = c(0:10)) +
+        annotate("segment", linetype = "longdash", 
+                 x = 0, xend = 10, y = 50, yend = 866,
                  colour = "#333333") +
-        annotate(geom = "text", x = 8, y = 550, label = "33% daily increase", color = "#333333",
-                 angle = 25) +
+        annotate(geom = "text", x = 8, y = 580, 
+                 label = "33% daily increase", color = "#333333", fontface=2,
+                 angle = 23) +
         scale_colour_manual(values=colourBlindPal) +
         theme_economist() + 
-        ggtitle("Alberta and Quebec are about 3 days behind BC and Ontario\nfollowing along a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
+        ggtitle("Alberta & Quebec are about 3 days behind BC & Ontario\nfollowing along a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
+        theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +
-        labs(caption = paste0("(as of ", colnames(cases[length(cases)]), ")"))  
-        
+        labs(caption = paste0("Last updated: ", colnames(cases[length(cases)])))  
+      
         #ggsave("covidcanada.png", dpi=300)
       
     })
