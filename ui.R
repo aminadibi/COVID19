@@ -1,5 +1,5 @@
 library(shinydashboard)
-library(leaflet)
+#library(leaflet)
 library(shinycssloaders)
 
 countryNames <- readRDS("countryNames.rds")
@@ -9,11 +9,11 @@ header <- dashboardHeader(
 
 sidebar <-    dashboardSidebar(
     sidebarMenu(
-        menuItem("Compare Growth", tabName = "growth"),
-        menuItem("Latest Maps", tabName = "dashboard"),
-        menuItem("Epi Curves", tabName = "countries"),
-        menuItem("Bars", tabName = "bars"),
-        menuItem("Trends", tabName = "trends")
+        menuItem("Compare Growth", tabName = "growth")
+#        menuItem("Latest Maps", tabName = "dashboard"),
+#        menuItem("Epi Curves", tabName = "countries"),
+#        menuItem("Bars", tabName = "bars"),
+#        menuItem("Trends", tabName = "trends")
         
 #        menuItem("Raw data", tabName = "rawdata")
     )
@@ -119,7 +119,30 @@ body <- dashboardBody(
                 #title = "Comparing Trends ",
                 plotOutput("compareEpi", height = 500) %>% withSpinner(),
                 #plotOutput("compareEpiDeath", height = 500) %>% withSpinner()
-                
+                column(width = 3,
+                                     
+                                     box(width = NULL, status = "warning",
+                                         #uiOutput("timeSinceLastUpdate"),
+                                         p(class = "text-muted",
+                                           br(),
+                                           "Data by ", tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "JHU CSSE", target="_blank"),
+                                           br(),
+                                           "Last updated: ", textOutput("lastUpdate"),
+                                           br(),
+                                           "Visuals by", tags$a(href="https://shefa.ca", "Shefa Analytics", target="_blank"),
+                        
+                                           
+                                         )   
+                                         ),
+                                         box(width = NULL, status = "warning",
+                                             #uiOutput("timeSinceLastUpdate"),
+                        
+                                     p(class = "text-muted",
+                                       br(),
+                                       "DISCLAIMER: Strictly intended for research and educational purposes. Visuals are based upon publicly available data which may be prone to errors. Should not be used for medical or policy guidance. Shefa Analytics will not be liable to any person or entity for any loss or damages."
+                                     ))
+                              )
+                       #   )),                
                 
             )
           ))
