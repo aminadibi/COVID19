@@ -533,6 +533,7 @@ function(input, output, session) {
         theme(legend.title=element_blank()) +
         labs(caption = paste0("(as of ", colnames(cases[length(cases)]), ")"))  
         
+        #ggsave("covidcanada.png", dpi=300)
       
     })
     
