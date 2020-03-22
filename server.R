@@ -16,7 +16,7 @@ library(RColorBrewer)
 
 function(input, output, session) {
     
-    data (state)
+    #data (state)
     getData <- reactive ({
       caseType <- "Confirmed"
       url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-", caseType, ".csv")
