@@ -2,7 +2,7 @@ library(shinydashboard)
 #library(leaflet)
 library(shinycssloaders)
 
-countryNames <- readRDS("countryNames.rds")
+#countryNames <- readRDS("countryNames.rds")
 header <- dashboardHeader(
     title = "COVID-19 in Canada"
 )
