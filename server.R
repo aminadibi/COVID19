@@ -482,8 +482,8 @@ function(input, output, session) {
     output$compareEpi <- renderPlot({
 
       # The palette with black:
-      colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#0072B2",
-                          "#999999", "#D55E00", "#009E73", "#CC79A7")
+      colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
+                          "#999999", "#CC79A7", "#0072B2")   
       cases <- getData()$covidCases
       
       lineDataCases <- getData()$barChartDataCases %>% 

@@ -17,8 +17,8 @@ time_series_19_covid_Confirmed <- read_csv(url)
 covidCases <- time_series_19_covid_Confirmed %>% rename (country = "Country/Region") %>% rename (name = "Province/State") %>%
   filter (country == "Canada") 
 
-colourBlindPal <- c("#000000", "#E69F00", "#56B4E9", "#0072B2",
-                    "#999999", "#D55E00", "#009E73", "#CC79A7")      
+colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
+                    "#999999", "#CC79A7", "#0072B2")      
 
 lineDataCases <- covidCases %>% 
   select (-c(country, Lat, Long)) %>% 
@@ -62,7 +62,7 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
            angle = 23) +
   scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
-  ggtitle("Alberta & Quebec are about 3 days behind BC & Ontario\nfollowing along a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
+  ggtitle("Alberta & Quebec are about 3 days behind BC & Ontario\nfollowing a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) +
