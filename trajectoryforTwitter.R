@@ -9,8 +9,8 @@ library(scales)
 library(RColorBrewer)
 library(ggrepel)
 
-caseType <- "Confirmed"
-url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-", caseType, ".csv")
+caseType <- "confirmed_global"
+url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_", caseType, ".csv")
 
 time_series_19_covid_Confirmed <- read_csv(url)
 
@@ -55,14 +55,30 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
                      breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
   scale_x_continuous(breaks = c(0:10)) +
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = 10, y = 50, yend = 866,
+           x = 0, xend = 10, y = 50, yend = 503,
            colour = "#333333") +
-  annotate(geom = "text", x = 8, y = 580, 
-           label = "33% daily increase", color = "#333333", fontface=2,
-           angle = 23) +
+  
+  annotate(geom = "text", x = 5, y = 150, 
+           label = "doubles every 3 days", color = "#333333", fontface=2,
+           angle = 20) +
+  
+  annotate("segment", linetype = "longdash", 
+           x = 0, xend = 10, y = 50, yend = 200,
+           colour = "#333333") +
+  annotate(geom = "text", x = 5, y = 95, 
+           label = "doubles every 5 days", color = "#333333", fontface=2,
+           angle = 13) +
+  
+  annotate("segment", linetype = "longdash", 
+           x = 0, xend = 8, y = 50, yend = 800,
+           colour = "#333333") +
+  annotate(geom = "text", x = 4, y = 220, 
+           label = "doubles every 2 days", color = "#333333", fontface=2,
+           angle = 30) +
+  
   scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
-  ggtitle("Alberta & Quebec are about 3 days behind BC & Ontario\nfollowing a similar trajectory \n", subtitle = "Cumulative number of cases by days since 50th case") +
+  ggtitle("March 23: Big surge in COVID19 cases in Quebec\n", subtitle = "Cumulative number of cases by days since 50th case") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) +
