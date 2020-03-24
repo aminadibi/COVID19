@@ -12,19 +12,21 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(scales)
 library(RColorBrewer)
+library(ggrepel)
 
 
 function(input, output, session) {
     
     data (state)
     getData <- reactive ({
-      caseType <- "Confirmed"
-      url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-", caseType, ".csv")
+      caseType <- "confirmed_global"
+      url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_", caseType, ".csv")
       time_series_19_covid_Confirmed <- read_csv(url)
       
       covidCases <- time_series_19_covid_Confirmed %>% rename (name = "Country/Region") %>%
-        filter (name != "US" | (name == "US" & `Province/State` %in% state.name)) %>% group_by(name) %>%
-        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = FALSE)  %>% mutate(name = replace(name, name == "US", "United States"))
+#        filter (name != "US" | (name == "US" & `Province/State` %in% state.name)) %>% group_by(name) %>%
+                group_by(name) %>%
+                summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = FALSE)  %>% mutate(name = replace(name, name == "US", "United States"))
       
         casesUS <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region")  %>%  rename (State = "Province/State")  %>% mutate(name = replace(name, name == "US", "United States")) %>%
                               filter(name == "United States" | name=="Canada")
@@ -600,7 +602,7 @@ function(input, output, session) {
       
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("number of days since 1000th cases") + ylab ("cases") +
-        geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
+        geom_text_repel(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
                                                                      x = days + 1, 
                                                                      y = Cases, 
                                                                      color = name)) + 
@@ -648,7 +650,7 @@ function(input, output, session) {
       
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=1) + xlab ("number of days since 10th death") + ylab ("deaths") +
-        geom_text(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
+        geom_text_repel(data = lineDataCases %>% filter(days == last(days)), aes(label = name, 
                                                                            x = days + 1, 
                                                                            y = Cases, 
                                                                            color = name)) + 
