@@ -41,8 +41,10 @@ lineDataCases <- covidCases %>%
   group_by(name) %>% mutate(date = date - date[1L]) %>%
   mutate(days = as.numeric(date)) #%>% filter(days <30)
 
+lastDay <- max(lineDataCases$days)
+
 ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-  geom_line(size=0.7) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
   ylab ("Cases \n") +
   geom_text_repel(data = lineDataCases %>% 
               filter(days == last(days)), aes(label = name, 
@@ -54,23 +56,25 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
   scale_x_continuous(breaks = c(0:10)) +
+  
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = 10, y = 50, yend = 503,
+           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
            colour = "#333333") +
   
   annotate(geom = "text", x = 5, y = 150, 
            label = "doubles every 3 days", color = "#333333", fontface=2,
            angle = 20) +
   
+  
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = 10, y = 50, yend = 200,
+           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/5))^lastDay,
            colour = "#333333") +
   annotate(geom = "text", x = 5, y = 95, 
            label = "doubles every 5 days", color = "#333333", fontface=2,
            angle = 13) +
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = 8, y = 50, yend = 800,
+           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
            colour = "#333333") +
   annotate(geom = "text", x = 4, y = 220, 
            label = "doubles every 2 days", color = "#333333", fontface=2,
@@ -78,9 +82,9 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   
   scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
-  ggtitle("March 23: Big surge in COVID19 cases in Quebec\n", subtitle = "Cumulative number of cases by days since 50th case") +
+  ggtitle("March 24th: Ontario, BC, and Alberta on the same trajectory\nQuebec cases growing faster \n", subtitle = "Cumulative number of cases by days since 50th case") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) +
-  labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", colnames(covidCases[length(covidCases)])))  
+  labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", ymd(mdy(colnames(covidCases[length(covidCases)]))))) 
   ggsave("covidcanada.png", width = 32.2, height = 20, units = "cm", dpi=300)
