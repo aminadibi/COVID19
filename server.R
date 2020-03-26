@@ -516,7 +516,7 @@ function(input, output, session) {
                                                           y = Cases, 
                                                           color = name,
                                                           fontface=2), size = 5) + 
-        coord_trans(y="log") +
+        #coord_trans(y="log") +
         scale_y_continuous(trans = log10_trans(),
                            breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
         scale_x_continuous(breaks = c(0:10)) +
@@ -544,7 +544,7 @@ function(input, output, session) {
         
         scale_colour_manual(values=colourBlindPal) +
         theme_economist() + 
-        ggtitle("March 23: Big surge in COVID19 cases in Quebec\n", subtitle = "Cumulative number of cases by days since 50th case") +
+        ggtitle("March 25: Faster growth in Quebec\n", subtitle = "Cumulative number of cases by days since 50th case") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) +

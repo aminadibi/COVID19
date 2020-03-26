@@ -15,13 +15,21 @@ url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/
 time_series_19_covid_Confirmed <- read_csv(url)
 
 covidCases <- time_series_19_covid_Confirmed %>% rename (country = "Country/Region") %>% rename (name = "Province/State") %>%
-  filter (country == "Canada") 
-
+  filter (country == "Canada" | country == "Italy")  %>% select(-Lat, -Long, -`1/22/20`)
+covidCases$name[12] <- "Italy"
+sumCanada  <- time_series_19_covid_Confirmed %>% rename (country = "Country/Region") %>% rename (name = "Province/State") %>%
+  filter (country == "Canada")  %>%
+  group_by(country) %>%
+  summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = FALSE)
+               
 colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
                     "#999999", "#CC79A7", "#0072B2")      
 
-lineDataCases <- covidCases %>% 
-  select (-c(country, Lat, Long)) %>% 
+
+sumCanada$name <- "Canada"
+
+lineDataCases <- rbind(covidCases) %>% 
+  select (-c(country)) %>% 
   mutate(name = replace(name, name == "British Columbia", "BC")) %>% 
   mutate(name = replace(name, name == "Ontario", "ON")) %>% 
   mutate(name = replace(name, name == "Alberta", "AB")) %>% 
@@ -37,14 +45,14 @@ lineDataCases <- covidCases %>%
   mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
   
   pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
-  filter (Cases>=50) %>% arrange (name, date) %>% 
+  filter (Cases>=100) %>% arrange (name, date) %>% 
   group_by(name) %>% mutate(date = date - date[1L]) %>%
   mutate(days = as.numeric(date)) #%>% filter(days <30)
 
 lastDay <- max(lineDataCases$days)
 
 ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
   ylab ("Cases \n") +
   geom_text_repel(data = lineDataCases %>% 
               filter(days == last(days)), aes(label = name, 
@@ -52,37 +60,37 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
                                               y = Cases, 
                                               color = name,
                                               fontface=2), size = 5) + 
-  coord_trans(y="log") +
+  #coord_trans(y="log") +
   scale_y_continuous(trans = log10_trans(),
-                     breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
-  scale_x_continuous(breaks = c(0:10)) +
+                     breaks = c(20, 50, 100, 200, 300, 500, 1000, 10000, 80000)) +
+  scale_x_continuous(breaks = c(0:30)) +
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/3))^lastDay,
            colour = "#333333") +
   
-  annotate(geom = "text", x = 5, y = 150, 
+  annotate(geom = "text", x = 23, y = 15000, 
            label = "doubles every 3 days", color = "#333333", fontface=2,
-           angle = 20) +
+           angle = 18) +
   
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/5))^lastDay,
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/5))^lastDay,
            colour = "#333333") +
-  annotate(geom = "text", x = 5, y = 95, 
+  annotate(geom = "text", x = 23, y = 2000, 
            label = "doubles every 5 days", color = "#333333", fontface=2,
            angle = 13) +
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/2))^lastDay,
            colour = "#333333") +
-  annotate(geom = "text", x = 4, y = 220, 
+  annotate(geom = "text", x = 23, y = 190000, 
            label = "doubles every 2 days", color = "#333333", fontface=2,
-           angle = 30) +
+           angle = 20) +
   
   scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
-  ggtitle("March 24th: Ontario, BC, and Alberta on the same trajectory\nQuebec cases growing faster \n", subtitle = "Cumulative number of cases by days since 50th case") +
+  ggtitle("March 25th: Quebec on the same trajectory as Italy, 25 days behind\n", subtitle = "Cumulative number of cases by days since 100th case") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) +
