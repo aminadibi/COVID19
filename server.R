@@ -506,7 +506,7 @@ function(input, output, session) {
         pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  mutate(date=mdy(date)) %>%
         filter (Cases>=50) %>% arrange (name, date) %>% group_by(name) %>% mutate(date = date - date[1L]) %>%
         mutate(days = as.numeric(date)) #%>% filter(days <30)
-      
+      lastDay <- max(lineDataCases$days)
       ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=0.7) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
         ylab ("Cases \n") +
