@@ -519,28 +519,30 @@ function(input, output, session) {
         #coord_trans(y="log") +
         scale_y_continuous(trans = log10_trans(),
                            breaks = c(20, 50, 100, 200, 300, 500, 1000)) +
-        scale_x_continuous(breaks = c(0:10)) +
+        scale_x_continuous(breaks = c(0:15)) +
         annotate("segment", linetype = "longdash", 
-                 x = 0, xend = 10, y = 50, yend = 503,
+                 x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
                  colour = "#333333") +
         
         annotate(geom = "text", x = 5, y = 150, 
                  label = "doubles every 3 days", color = "#333333", fontface=2,
                  angle = 20) +
         
+        
         annotate("segment", linetype = "longdash", 
-                 x = 0, xend = 10, y = 50, yend = 200,
+                 x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/5))^lastDay,
                  colour = "#333333") +
         annotate(geom = "text", x = 5, y = 95, 
                  label = "doubles every 5 days", color = "#333333", fontface=2,
                  angle = 13) +
         
         annotate("segment", linetype = "longdash", 
-                 x = 0, xend = 8, y = 50, yend = 800,
+                 x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
                  colour = "#333333") +
         annotate(geom = "text", x = 4, y = 220, 
                  label = "doubles every 2 days", color = "#333333", fontface=2,
                  angle = 30) +
+        
         
         scale_colour_manual(values=colourBlindPal) +
         theme_economist() + 
