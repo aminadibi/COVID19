@@ -97,8 +97,8 @@ function(input, output, session) {
     
     
     getDataDeath <- reactive ({
-      caseType <- "Deaths"
-      url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-", caseType, ".csv")
+      caseType <- "deaths_global"
+      url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_", caseType, ".csv")
       time_series_19_covid_Confirmed <- read_csv(url)
       covidCases <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region") %>%
         # mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
