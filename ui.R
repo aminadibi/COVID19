@@ -125,7 +125,7 @@ body <- dashboardBody(
                 #uiOutput("timeSinceLastUpdate"),
                 p(class = "text-muted",
                 #  br(),
-                  "Data by ", tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "JHU CSSE", target="_blank"),
+                  "Data by ", tags$a(href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19.html", "Canada.ca", target="_blank"),
                   br(),
                 #  "Last updated: ", textOutput("lastUpdate"),
                   #br(),
