@@ -484,7 +484,7 @@ function(input, output, session) {
       # The palette with black:
       colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
                           "#999999", "#CC79A7", "#0072B2")   
-      cases <- getData()$covidCases
+      covidCases <- getData()$covidCases
       
 
 lineDataCases <- covidCases %>% 
@@ -519,7 +519,7 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
                                                     fontface=2), size = 5) + 
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(20, 50, 100, 200, 300, 500, 1000, 2000, 5000, 10000)) +
-  scale_x_continuous(breaks = c(0:15)) +
+  scale_x_continuous(breaks = c(0:lastDay)) +
   
   annotate("segment", linetype = "longdash", 
            x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,

@@ -52,7 +52,7 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
                                                     fontface=2), size = 5) + 
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(20, 50, 100, 200, 300, 500, 1000, 2000, 5000, 10000)) +
-  scale_x_continuous(breaks = c(0:15)) +
+  scale_x_continuous(breaks = c(0:lastDay)) +
   
   annotate("segment", linetype = "longdash", 
            x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
