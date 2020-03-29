@@ -36,13 +36,13 @@ lineDataCases <- covidCases %>%
   mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
   filter (name!="Canada") %>%
  # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
-  filter (Cases>=100) %>% arrange (name, date) %>% 
+  filter (Cases>=50) %>% arrange (name, date) %>% 
   group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
 
 lastDay <- max(lineDataCases$days)
 
 ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
   ylab ("Cases \n") +
   geom_text_repel(data = lineDataCases %>% 
                     filter(days == last(days)), aes(label = name, 
@@ -79,7 +79,7 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   
   scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
-  ggtitle("March 24th: Ontario, BC, and Alberta on the same trajectory\nQuebec cases growing faster \n", subtitle = "Cumulative number of cases by days since 100th case") +
+  ggtitle(" \n", subtitle = "Cumulative number of cases by days since 50th case") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) +

@@ -542,9 +542,9 @@ ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
            colour = "#333333") +
   annotate(geom = "text", x = 14, y = 5000, 
            label = "doubles every 2 days", color = "#333333", fontface=2,
-           angle = 30) +
+           angle = 26) +
   
-  scale_colour_manual(values=colourBlindPal) +
+  #scale_colour_manual(values=colourBlindPal) +
   theme_economist() + 
   ggtitle("COVID19 Trajectory in Canadian Provinces\n", subtitle = "Cumulative number of cases by days since 50th case") +
   theme(text = element_text(size=16)) +
