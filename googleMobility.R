@@ -4,7 +4,6 @@ library(lubridate)
 library(ggthemes)
 library(ftplottools)
 
-
 Canada <- jsonlite::fromJSON("https://pastelsky.github.io/covid-19-mobility-tracker/output/CA/mobility.json")
 US <- jsonlite::fromJSON("https://pastelsky.github.io/covid-19-mobility-tracker/output/US/mobility.json")
 GB <- jsonlite::fromJSON("https://pastelsky.github.io/covid-19-mobility-tracker/output/GB/mobility.json")
