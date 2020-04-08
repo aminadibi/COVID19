@@ -9,6 +9,8 @@ library(scales)
 library(RColorBrewer)
 library(ggrepel)
 library(patchwork)
+library(gghighlight)
+library(ftplottools)
 
 
 url <- "https://docs.google.com/spreadsheets/d/1ad7-09_Jn6AxsdkVPE33T-iLfGpPRmd3piXQqFiVeas/export?&format=csv"
@@ -44,12 +46,14 @@ lastDay <- max(lineDataCases$days)
 pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
   ylab ("Cases \n") +
-  geom_text_repel(data = lineDataCases %>% 
-                    filter(days == last(days)), aes(label = name, 
-                                                    x = days + 0.2, 
-                                                    y = Cases, 
-                                                    color = name,
-                                                    fontface=2), size = 5) + 
+  # geom_text_repel(data = lineDataCases %>% 
+  #                   filter(days == last(days)), aes(label = name, 
+  #                                                   x = days + 0.2, 
+  #                                                   y = Cases, 
+  #                                                   color = name,
+  #                                                   fontface=2), size = 5) + 
+  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+  
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(100, 300, 1000, 3000, 10000)) +
  # scale_x_continuous(breaks = c(0:lastDay)) +
@@ -78,7 +82,7 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   #          angle = 30) +
   
   scale_colour_brewer(palette = "Set1") +
-  theme_economist() + 
+  ft_theme() +
   ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
@@ -88,12 +92,14 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
 pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name)) +
   geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
   ylab ("Tests \n") +
-  geom_text_repel(data = lineDataCases %>% 
-                    filter(days == last(days)), aes(label = name, 
-                                                    x = days + 0.2, 
-                                                    y = numtested, 
-                                                    color = name,
-                                                    fontface=2), size = 5) + 
+  # geom_text_repel(data = lineDataCases %>% 
+  #                   filter(days == last(days)), aes(label = name, 
+  #                                                   x = days + 0.2, 
+  #                                                   y = numtested, 
+  #                                                   color = name,
+  #                                                   fontface=2), size = 5) + 
+  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+  
   scale_y_continuous( labels = scales::comma) +
   #scale_x_continuous(breaks = c(0:lastDay)) +
 
@@ -122,7 +128,7 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name))
   #          angle = 30) +
   
   scale_colour_brewer(palette = "Set1") +
-  theme_economist() + 
+  ft_theme() + 
   ggtitle(" \n", subtitle = "Cumulative number of tests") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
@@ -139,12 +145,15 @@ lastDayDeaths <- max(lineDataDeaths$days)
 pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)) +
   geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 10th death") + 
   ylab ("Deaths \n") +
-  geom_text_repel(data = lineDataDeaths %>% 
-                    filter(days == last(days)), aes(label = name, 
-                                                    x = days + 0.2, 
-                                                    y = numdeaths, 
-                                                    color = name,
-                                                    fontface=2), size = 5) + 
+  # geom_text_repel(data = lineDataDeaths %>% 
+  #                   filter(days == last(days)), aes(label = name, 
+  #                                                   x = days + 0.2, 
+  #                                                   y = numdeaths, 
+  #                                                   color = name,
+  #                                                   fontface=2), size = 5) + 
+  
+  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+  
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
   #scale_x_continuous(breaks = c(0:lastDayDeaths)) +
@@ -173,7 +182,7 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
   #          angle = 30) +
   
   scale_colour_brewer(palette = "Set1") +
-  theme_economist() + 
+  ft_theme() +
   ggtitle(" \n", subtitle = "Cumulative number of deaths") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
