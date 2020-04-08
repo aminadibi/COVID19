@@ -36,13 +36,13 @@ colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#999999", "#56B4E9",
 
 lineDataCases <- covidCases %>% 
  # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
-  filter (Cases>=50) %>% arrange (name, date) %>% 
+  filter (Cases>=100) %>% arrange (name, date) %>% 
   group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
 
 lastDay <- max(lineDataCases$days)
 
 pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
   ylab ("Cases \n") +
   geom_text_repel(data = lineDataCases %>% 
                     filter(days == last(days)), aes(label = name, 
@@ -51,11 +51,11 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
                                                     color = name,
                                                     fontface=2), size = 5) + 
   scale_y_continuous(trans = log10_trans(),
-                     breaks = c(20, 50, 100, 200, 300, 500, 1000, 2000, 5000, 10000)) +
-  scale_x_continuous(breaks = c(0:lastDay)) +
+                     breaks = c(100, 300, 1000, 3000, 10000)) +
+ # scale_x_continuous(breaks = c(0:lastDay)) +
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/3))^lastDay,
            colour = "#333333") +
   
   # annotate(geom = "text", x = 5, y = 150, 
@@ -64,7 +64,7 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   
   
   annotate("segment", linetype = "longdash", 
-           x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/5))^lastDay,
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/5))^lastDay,
            colour = "#333333") +
   # annotate(geom = "text", x = 5, y = 95, 
   #          label = "doubles every 5 days", color = "#333333", fontface=2,
@@ -79,18 +79,14 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   
   scale_colour_brewer(palette = "Set1") +
   theme_economist() + 
-  ggtitle(" \n", subtitle = "Cumulative number of cases by days since 50th case") +
+  ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) 
   #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
 
-pCases
-ggsave(plot = pCases, "covidcanada.eps", width = 32.2, height = 20, units = "cm", dpi=300)
-
-
 pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
   ylab ("Tests \n") +
   geom_text_repel(data = lineDataCases %>% 
                     filter(days == last(days)), aes(label = name, 
@@ -98,9 +94,8 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name))
                                                     y = numtested, 
                                                     color = name,
                                                     fontface=2), size = 5) + 
-  scale_y_continuous(trans = log10_trans(),
-                     breaks = c(1000, 2000, 5000, 10000, 20000, 50000, 100000)) +
-  scale_x_continuous(breaks = c(0:lastDay)) +
+  scale_y_continuous( labels = scales::comma) +
+  #scale_x_continuous(breaks = c(0:lastDay)) +
 
   
   # annotate("segment", linetype = "longdash", 
@@ -128,14 +123,11 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name))
   
   scale_colour_brewer(palette = "Set1") +
   theme_economist() + 
-  ggtitle(" \n", subtitle = "Cumulative number of tests by days since 50th case") +
+  ggtitle(" \n", subtitle = "Cumulative number of tests") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) 
   #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
-
-pTested
-
 
 lineDataDeaths <- covidCases %>% 
   # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
@@ -145,7 +137,7 @@ lineDataDeaths <- covidCases %>%
 lastDayDeaths <- max(lineDataDeaths$days)
 
 pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 50th cases") + 
+  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 10th death") + 
   ylab ("Deaths \n") +
   geom_text_repel(data = lineDataDeaths %>% 
                     filter(days == last(days)), aes(label = name, 
@@ -155,7 +147,7 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
                                                     fontface=2), size = 5) + 
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
-  scale_x_continuous(breaks = c(0:lastDayDeaths)) +
+  #scale_x_continuous(breaks = c(0:lastDayDeaths)) +
   
    annotate("segment", linetype = "longdash", 
             x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/3))^lastDayDeaths,
@@ -182,13 +174,14 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
   
   scale_colour_brewer(palette = "Set1") +
   theme_economist() + 
-  ggtitle(" \n", subtitle = "Cumulative number of deaths by days since 10th death") +
+  ggtitle(" \n", subtitle = "Cumulative number of deaths") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) 
   #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
 
-pDeaths
-
-(pCases | pTested ) / pDeaths +
+pCanada <- (pCases / pTested ) | pDeaths +
   labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
+
+pCanada
+ggsave(plot = pCanada, "covidcanada.eps", width = 32.2, height = 20, units = "cm", dpi=300)
