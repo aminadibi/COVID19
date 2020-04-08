@@ -13,7 +13,9 @@ library(ggthemes)
 library(scales)
 library(RColorBrewer)
 library(ggrepel)
-
+library(gghighlight)
+library(ftplottools)
+library(patchwork)
 
 function(input, output, session) {
     
