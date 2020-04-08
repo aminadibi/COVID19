@@ -16,8 +16,10 @@ library(ftplottools)
 url <- "https://docs.google.com/spreadsheets/d/1ad7-09_Jn6AxsdkVPE33T-iLfGpPRmd3piXQqFiVeas/export?&format=csv"
 
 CanadaCases <- read_csv(url)
+CanadaCases <- read_csv(url)
+CanadaPop <- read_csv("./provPop.csv") 
 
-covidCases <- CanadaCases %>% rename (name = "prname")  %>% rename (Cases = "numconf")  %>% mutate(date=dmy(date)) %>%
+covidCases <- left_join(CanadaCases, CanadaPop) %>% rename (name = "prname")  %>% rename (Cases = "numconf")  %>% mutate(date=dmy(date)) %>%
   mutate(name = replace(name, name == "British Columbia", "BC")) %>% 
   mutate(name = replace(name, name == "Ontario", "ON")) %>% 
   mutate(name = replace(name, name == "Alberta", "AB")) %>% 
@@ -31,10 +33,8 @@ covidCases <- CanadaCases %>% rename (name = "prname")  %>% rename (Cases = "num
   mutate(name = replace(name, name == "Yukon", "YT")) %>% 
   mutate(name = replace(name, name == "Northwest Territories", "NT")) %>% 
   mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
-  filter (name!="Canada") 
+  filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer1000=numtested/population*1000)
 
-colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#999999", "#56B4E9", 
-                    "#009E73", "#CC79A7", "#0072B2")      
 
 lineDataCases <- covidCases %>% 
  # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
@@ -44,8 +44,8 @@ lineDataCases <- covidCases %>%
 lastDay <- max(lineDataCases$days)
 
 pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
-  ylab ("Cases \n") +
+  geom_line(size=0.8) + geom_point(size=1) + #xlab ("\n Number of days since 100th case") + 
+  ylab ("Cases \n") + xlab ("") + 
   # geom_text_repel(data = lineDataCases %>% 
   #                   filter(days == last(days)), aes(label = name, 
   #                                                   x = days + 0.2, 
@@ -72,7 +72,11 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
            colour = "#333333") +
   # annotate(geom = "text", x = 5, y = 95, 
   #          label = "doubles every 5 days", color = "#333333", fontface=2,
-  #          angle = 13) +
+  #          angle = 13) 
+  
+  annotate("segment", linetype = "longdash", 
+           x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/10))^lastDay,
+           colour = "#333333") +
   
   # annotate("segment", linetype = "longdash", 
   #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
@@ -89,9 +93,9 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   theme(legend.title=element_blank()) 
   #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
 
-pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name)) +
-  geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 100th cases") + 
-  ylab ("Tests \n") +
+pTested <- ggplot(data = lineDataCases, aes(x=days, y=numTestedPer1000, colour = name)) +
+  geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Number of days since 100th case") + 
+  ylab ("Tested per 1000") +
   # geom_text_repel(data = lineDataCases %>% 
   #                   filter(days == last(days)), aes(label = name, 
   #                                                   x = days + 0.2, 
@@ -129,7 +133,7 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numtested, colour = name))
   
   scale_colour_brewer(palette = "Set1") +
   ft_theme() + 
-  ggtitle(" \n", subtitle = "Cumulative number of tests") +
+  ggtitle(" \n", subtitle = "Cumulative number of tests per 1000 residents") +
   theme(text = element_text(size=16)) +
   theme(legend.position = "none") +
   theme(legend.title=element_blank()) 
@@ -174,6 +178,12 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
    #          label = "... every 5 days", color = "#333333", fontface=2,
    #          angle = 18) +
   
+  annotate("segment", linetype = "longdash", 
+           x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/10))^lastDayDeaths,
+           colour = "#333333") +
+  
+  
+  
   # annotate("segment", linetype = "longdash", 
   #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
   #          colour = "#333333") +
@@ -190,7 +200,7 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
   #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
 
 pCanada <- (pCases / pTested ) | pDeaths +
-  labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
+  labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
 
 pCanada
-ggsave(plot = pCanada, "covidcanada.eps", width = 32.2, height = 20, units = "cm", dpi=300)
+ggsave(plot = pCanada, "covidcanada.eps", width = 45, height = 32, units = "cm", dpi=300)
