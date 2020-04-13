@@ -122,8 +122,19 @@ function(input, output, session) {
     output$compareEpi <- renderPlot({
 
       # The palette with black:
+    
       colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
                           "#999999", "#CC79A7", "#0072B2")   
+      
+      provinces <- c("ON",
+                     "BC",
+                     "QC",
+                     "AB",                    
+                     "SK", 
+                     "MB",
+                     "NB",                    
+                     "NS")
+      
       covidCases <- getData()$covidCases
       
       
@@ -135,15 +146,15 @@ function(input, output, session) {
       lastDay <- max(lineDataCases$days)
       
       pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + #xlab ("\n Number of days since 100th case") + 
-        ylab ("Cases \n") + xlab ("") + 
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Number of days since 100th case") + 
+        ylab ("Cases \n") + 
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
         #                                                   x = days + 0.2, 
         #                                                   y = Cases, 
         #                                                   color = name,
         #                                                   fontface=2), size = 5) + 
-        gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+        gghighlight(name %in% provinces) +  
         
         scale_y_continuous(trans = log10_trans(),
                            breaks = c(100, 300, 1000, 3000, 10000)) +
@@ -193,7 +204,7 @@ function(input, output, session) {
         #                                                   y = numtested, 
         #                                                   color = name,
         #                                                   fontface=2), size = 5) + 
-        gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+        gghighlight(name %in% provinces) +  
         
         scale_y_continuous( labels = scales::comma) +
         #scale_x_continuous(breaks = c(0:lastDay)) +
@@ -224,7 +235,7 @@ function(input, output, session) {
       
       scale_colour_brewer(palette = "Set1") +
         ft_theme() + 
-        ggtitle(" \n", subtitle = "Cumulative number of tests per 1000 residents") +
+        ggtitle(" \n", subtitle = "Cumulative number of tests") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -247,7 +258,7 @@ function(input, output, session) {
         #                                                   color = name,
         #                                                   fontface=2), size = 5) + 
         
-        gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+        gghighlight(name %in% provinces) +  
         
         scale_y_continuous(trans = log10_trans(),
                            breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
@@ -290,7 +301,7 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- (pCases / pTested ) | pDeaths +
+      pCanada <- pCases | pTested  | pDeaths +
         labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada

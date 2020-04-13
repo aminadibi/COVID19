@@ -35,7 +35,15 @@ covidCases <- left_join(CanadaCases, CanadaPop) %>% rename (name = "prname")  %>
   mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
   filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer1000=numtested/population*1000)
 
-
+provinces <- c("ON",
+               "BC",
+               "QC",
+               "AB",                    
+               "SK", 
+               "MB",
+               "NB",                    
+               "NS")
+  
 lineDataCases <- covidCases %>% 
  # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
   filter (Cases>=100) %>% arrange (name, date) %>% 
@@ -52,7 +60,7 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   #                                                   y = Cases, 
   #                                                   color = name,
   #                                                   fontface=2), size = 5) + 
-  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
+  gghighlight(name %in% provinces) +  
   
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(100, 300, 1000, 3000, 10000)) +
@@ -85,7 +93,7 @@ pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
   #          label = "doubles every 2 days", color = "#333333", fontface=2,
   #          angle = 30) +
   
-  scale_colour_brewer(palette = "Set1") +
+  scale_colour_brewer(palette = "Accent") +
   ft_theme() +
   ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
   theme(text = element_text(size=16)) +
@@ -102,8 +110,7 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numTestedPer1000, colour =
   #                                                   y = numtested, 
   #                                                   color = name,
   #                                                   fontface=2), size = 5) + 
-  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
-  
+  gghighlight(name %in% provinces) +   
   scale_y_continuous( labels = scales::comma) +
   #scale_x_continuous(breaks = c(0:lastDay)) +
 
@@ -131,7 +138,7 @@ pTested <- ggplot(data = lineDataCases, aes(x=days, y=numTestedPer1000, colour =
   #          label = "doubles every 2 days", color = "#333333", fontface=2,
   #          angle = 30) +
   
-  scale_colour_brewer(palette = "Set1") +
+  scale_colour_brewer(palette = "Accent") +
   ft_theme() + 
   ggtitle(" \n", subtitle = "Cumulative number of tests per 1000 residents") +
   theme(text = element_text(size=16)) +
@@ -156,8 +163,7 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
   #                                                   color = name,
   #                                                   fontface=2), size = 5) + 
   
-  gghighlight(name=="QC" | name=="BC" | name == "ON" | name == "AB") +  
-  
+  gghighlight(name %in% provinces) +   
   scale_y_continuous(trans = log10_trans(),
                      breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
   #scale_x_continuous(breaks = c(0:lastDayDeaths)) +
@@ -191,7 +197,7 @@ pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)
   #          label = "doubles every 2 days", color = "#333333", fontface=2,
   #          angle = 30) +
   
-  scale_colour_brewer(palette = "Set1") +
+  scale_colour_brewer(palette = "Accent") +
   ft_theme() +
   ggtitle(" \n", subtitle = "Cumulative number of deaths") +
   theme(text = element_text(size=16)) +
