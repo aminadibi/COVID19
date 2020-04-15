@@ -43,9 +43,9 @@ cityHighlight <- c("Vancouver",
             "New York City")
 
 
-Canada <- read_csv("./applemobilitytrends-2020-04-13.csv")
+appleData <- read_csv("./applemobilitytrends-2020-04-13.csv")
 
-mobility <- as.data.frame(Canada) %>% filter(region %in% cities) %>% 
+mobility <- as.data.frame(appleData) %>% filter(region %in% cities) %>% 
   select (-geo_type) %>%
   pivot_longer(cols = -c(1,2), names_to = "date", values_to = "values") %>%
   mutate(date=ymd(date)) %>% mutate(values = values - 100) %>% filter (date>=ymd("2020-03-01"))
@@ -87,5 +87,50 @@ pCanada <- p1 + p2 + p3 +
 
 
 
-ggsave(plot = pCanada, "mobilitycanada.eps", width = 32, height = 20, units = "cm", dpi=300)
+ggsave(plot = pCanada, "mobilitycanada.pdf", width = 32, height = 20, units = "cm", dpi=300)
+
+ggsave(plot = pCanada, "mobilitycanada2.png", width = 32, height = 20, units = "cm", dpi=300)
+
+
+#### WORLD
+
+
+mobilityWorld <- as.data.frame(appleData) %>% filter(geo_type == "country/region") %>% 
+  select (-geo_type) %>%
+  pivot_longer(cols = -c(1,2), names_to = "date", values_to = "values") %>%
+  mutate(date=ymd(date)) %>% mutate(values = values - 100) %>% filter (date>=ymd("2020-03-01"))
+
+p1w <- ggplot(mobilityWorld %>% filter(transportation_type == "walking") ) + 
+  geom_line (aes(y=values, x=date, colour = region), size=1 ) +
+  # geom_smooth (aes(y=values, x=date, colour = region), size=1, se=F ) +
+  ylab ("% Change") +
+  gghighlight(use_direct_label = FALSE) +
+  facet_wrap(~ region) +
+  ggtitle("Walking")+
+  ft_theme() +   
+  labs(caption = paste0("Visualization by Shefa Analytics.\nBased on Apple Mobility Trends Data. Last updated: ", "2020-04-13")) +
+  theme(legend.position = "none") + xlab("") + scale_x_date(date_labels = "%b", date_breaks = "1 month") 
+
+p2w <- ggplot(mobilityWorld %>% filter(transportation_type == "driving") ) + 
+  geom_line (aes(y=values, x=date, colour = region), size=1 ) +
+  # geom_smooth (aes(y=values, x=date, colour = region), size=1, se=F ) +
+  ylab ("% Change") +
+  gghighlight(use_direct_label = FALSE) +
+  facet_wrap(~ region) +
+  ggtitle("driving")+
+  ft_theme() +   
+  labs(caption = paste0("Visualization by Shefa Analytics.\nBased on Apple Mobility Trends Data. Last updated: ", "2020-04-13")) +
+  theme(legend.position = "none") + xlab("") + scale_x_date(date_labels = "%b", date_breaks = "1 month") 
+
+
+p3w <- ggplot(mobilityWorld %>% filter(transportation_type == "transit") ) + 
+  geom_line (aes(y=values, x=date, colour = region), size=1 ) +
+  # geom_smooth (aes(y=values, x=date, colour = region), size=1, se=F ) +
+  ylab ("% Change") +
+  gghighlight(use_direct_label = FALSE) +
+  facet_wrap(~ region) +
+  ggtitle("Transit")+
+  ft_theme() +   
+  labs(caption = paste0("Visualization by Shefa Analytics.\nBased on Apple Mobility Trends Data. Last updated: ", "2020-04-13")) +
+  theme(legend.position = "none") + xlab("") + scale_x_date(date_labels = "%b", date_breaks = "1 month") 
 
