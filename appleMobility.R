@@ -94,11 +94,18 @@ ggsave(plot = pCanada, "mobilitycanada2.png", width = 32, height = 20, units = "
 
 #### WORLD
 
-
+exclusion <- c("Albania",
+               "Estonia",
+               "Israel",
+               "Macao",                    
+               "United Arab Emirates", 
+               "Latvia",
+               "Lithuania")
+  
 mobilityWorld <- as.data.frame(appleData) %>% filter(geo_type == "country/region") %>% 
   select (-geo_type) %>%
   pivot_longer(cols = -c(1,2), names_to = "date", values_to = "values") %>%
-  mutate(date=ymd(date)) %>% mutate(values = values - 100) %>% filter (date>=ymd("2020-03-01"))
+  mutate(date=ymd(date)) %>% mutate(values = values - 100) %>% filter (date>=ymd("2020-03-01") & !region %in% exclusion) 
 
 p1w <- ggplot(mobilityWorld %>% filter(transportation_type == "walking") ) + 
   geom_line (aes(y=values, x=date, colour = region), size=1 ) +
@@ -135,5 +142,5 @@ p3w <- ggplot(mobilityWorld %>% filter(transportation_type == "transit") ) +
   theme(legend.position = "none") + xlab("") + scale_x_date(date_labels = "%b", date_breaks = "1 month") 
 
 ggsave(plot = p1w, "walking world.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
-ggsave(plot = p2w, "walking driving.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
-ggsave(plot = p3w, "walking transit.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
+ggsave(plot = p2w, "driving world.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
+ggsave(plot = p3w, "transit world.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
