@@ -134,3 +134,6 @@ p3w <- ggplot(mobilityWorld %>% filter(transportation_type == "transit") ) +
   labs(caption = paste0("Visualization by Shefa Analytics.\nBased on Apple Mobility Trends Data. Last updated: ", "2020-04-13")) +
   theme(legend.position = "none") + xlab("") + scale_x_date(date_labels = "%b", date_breaks = "1 month") 
 
+ggsave(plot = p1w, "walking world.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
+ggsave(plot = p2w, "walking driving.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
+ggsave(plot = p3w, "walking transit.pdf", width = 279.4 , height = 215.9, units = "mm", dpi=300)
