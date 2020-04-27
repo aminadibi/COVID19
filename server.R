@@ -301,7 +301,7 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pCases | pTested  | pDeaths +
+      pCanada <- pCases / pTested / pDeaths +
         labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada
