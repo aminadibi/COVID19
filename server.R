@@ -41,7 +41,8 @@ function(input, output, session) {
       mutate(name = replace(name, name == "Yukon", "YT")) %>% 
       mutate(name = replace(name, name == "Northwest Territories", "NT")) %>% 
       mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
-      filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer1000=numtested/population*1000)
+      filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer100000=numtestedtoday/population*100000) %>% 
+      mutate (numtodayPer100000=numtoday/population*100000)
     
       results <- list()
       results$covidCases <- covidCases
@@ -130,10 +131,7 @@ function(input, output, session) {
                      "BC",
                      "QC",
                      "AB",                    
-                     "SK", 
-                     "MB",
-                     "NB",                    
-                     "NS")
+                     "MB")
       
       covidCases <- getData()$covidCases
       
@@ -144,6 +142,34 @@ function(input, output, session) {
         group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
       
       lastDay <- max(lineDataCases$days)
+      
+      todayDataCases <- lineDataCases %>% filter (date > (today()-14))
+        
+      pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Dates") + 
+        ylab ("Cases \n") + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_colour_brewer(palette = "Set1") +
+        ft_theme() +
+        ggtitle(" \n", subtitle = "Number of daily cases") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      
+      pTodayPerCap <- ggplot(data = todayDataCases, aes(x=date, y=numtodayPer100000, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Dates") + 
+        ylab ("Cases per 100,000\n") + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_colour_brewer(palette = "Set1") +
+        ft_theme() +
+        ggtitle(" \n", subtitle = "Number of daily cases per capita") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      
+      
       
       pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
         geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Number of days since 100th case") + 
@@ -195,8 +221,8 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pTested <- ggplot(data = lineDataCases, aes(x=days, y=numTestedPer1000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Number of days since 100th case") + 
+      pTested <- ggplot(data =  todayDataCases, aes(x=date, y=numTestedPer100000, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Date") + 
         ylab ("Tested per 1000") +
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -235,7 +261,7 @@ function(input, output, session) {
       
       scale_colour_brewer(palette = "Set1") +
         ft_theme() + 
-        ggtitle(" \n", subtitle = "Cumulative number of tests") +
+        ggtitle(" \n", subtitle = "daily number of tests") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -301,7 +327,7 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pCases / pTested / pDeaths +
+      pCanada <- pToday / pTodayPerCap / pTested +
         labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada
