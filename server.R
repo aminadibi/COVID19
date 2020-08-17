@@ -7,6 +7,7 @@ library(readr)
 library(ggplot2)
 library(lubridate)
 library(ggthemes)
+library(RcppRoll)
 #library(rgeos)
 # library(rnaturalearth)
 # library(rnaturalearthdata)
@@ -42,7 +43,7 @@ function(input, output, session) {
       mutate(name = replace(name, name == "Northwest Territories", "NT")) %>% 
       mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
       filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer100000=numtestedtoday/population*100000) %>% 
-      mutate (numtodayPer100000=numtoday/population*100000)
+      mutate (numtodayPer100000=numtoday/population*100000) 
     
       results <- list()
       results$covidCases <- covidCases
@@ -131,7 +132,8 @@ function(input, output, session) {
                      "BC",
                      "QC",
                      "AB",                    
-                     "MB")
+                     "MB",
+                     "SK")
       
       covidCases <- getData()$covidCases
       
@@ -142,29 +144,33 @@ function(input, output, session) {
         group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
       
       lastDay <- max(lineDataCases$days)
+
+      lineDataCases$numtoday <- roll_mean(lineDataCases$numtoday, 7, fill = 0, align = "right")
+      lineDataCases$numtodayPer100000 <- roll_mean(lineDataCases$numtodayPer100000, 7, fill = 0, align = "right")
+      lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 7, fill = 0, align = "right")
       
-      todayDataCases <- lineDataCases %>% filter (date > (today()-14))
-        
+      todayDataCases <- lineDataCases %>% filter (date > (today()-30))
+      
       pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Dates") + 
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
         ylab ("Cases \n") + 
         gghighlight(name %in% provinces) +  
         
-        scale_colour_brewer(palette = "Set1") +
+        scale_colour_brewer(palette = "Accent") +
         ft_theme() +
-        ggtitle(" \n", subtitle = "Number of daily cases") +
+        ggtitle(" \n", subtitle = "Number of daily cases (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
       
       pTodayPerCap <- ggplot(data = todayDataCases, aes(x=date, y=numtodayPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Dates") + 
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
         ylab ("Cases per 100,000\n") + 
         gghighlight(name %in% provinces) +  
         
-        scale_colour_brewer(palette = "Set1") +
+        scale_colour_brewer(palette = "Accent") +
         ft_theme() +
-        ggtitle(" \n", subtitle = "Number of daily cases per capita") +
+        ggtitle(" \n", subtitle = "Number of daily cases per capita (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -213,7 +219,7 @@ function(input, output, session) {
         #          label = "doubles every 2 days", color = "#333333", fontface=2,
         #          angle = 30) +
         
-        scale_colour_brewer(palette = "Set1") +
+        scale_colour_brewer(palette = "Accent") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
         theme(text = element_text(size=16)) +
@@ -222,8 +228,8 @@ function(input, output, session) {
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
       pTested <- ggplot(data =  todayDataCases, aes(x=date, y=numTestedPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Date") + 
-        ylab ("Tested per 1000") +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        ylab ("Tested per 100,000") +
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
         #                                                   x = days + 0.2, 
@@ -259,9 +265,9 @@ function(input, output, session) {
       #          label = "doubles every 2 days", color = "#333333", fontface=2,
       #          angle = 30) +
       
-      scale_colour_brewer(palette = "Set1") +
+      scale_colour_brewer(palette = "Accent") +
         ft_theme() + 
-        ggtitle(" \n", subtitle = "daily number of tests") +
+        ggtitle(" \n", subtitle = "daily number of tests (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -319,7 +325,7 @@ function(input, output, session) {
         #          label = "doubles every 2 days", color = "#333333", fontface=2,
         #          angle = 30) +
         
-        scale_colour_brewer(palette = "Set1") +
+        scale_colour_brewer(palette = "Accent") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Cumulative number of deaths") +
         theme(text = element_text(size=16)) +
