@@ -148,6 +148,7 @@ function(input, output, session) {
       lineDataCases$numtoday <- roll_mean(lineDataCases$numtoday, 7, fill = 0, align = "right")
       lineDataCases$numtodayPer100000 <- roll_mean(lineDataCases$numtodayPer100000, 7, fill = 0, align = "right")
       lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 7, fill = 0, align = "right")
+      lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 7, fill = 0, align = "right")
       
       todayDataCases <- lineDataCases %>% filter (date > (today()-30))
       
@@ -158,7 +159,7 @@ function(input, output, session) {
         
         scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
-        ggtitle(" \n", subtitle = "Number of daily cases (rolling 7 day mean)") +
+        ggtitle("daily cases", subtitle = "(rolling 7 day average)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -170,7 +171,7 @@ function(input, output, session) {
         
         scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
-        ggtitle(" \n", subtitle = "Number of daily cases per capita (rolling 7 day mean)") +
+        ggtitle("daily cases per capita", subtitle = "(rolling 7 day average)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -178,7 +179,7 @@ function(input, output, session) {
       
       
       pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n Number of days since 100th case") + 
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n days since 100th case") + 
         ylab ("Cases \n") + 
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -267,7 +268,7 @@ function(input, output, session) {
       
       scale_colour_brewer(palette = "Dark2") +
         ft_theme() + 
-        ggtitle(" \n", subtitle = "daily number of tests (rolling 7 day mean)") +
+        ggtitle("tests", subtitle = "(rolling 7 day average)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
@@ -280,8 +281,8 @@ function(input, output, session) {
       
       lastDayDeaths <- max(lineDataDeaths$days)
       
-      pDeaths <- ggplot(data = lineDataDeaths, aes(x=days, y=numdeaths, colour = name)) +
-        geom_line(size=0.9) + geom_point(size=1) + xlab ("\n Number of days since 10th death") + 
+      pDeaths <- ggplot(data = todayDataCases, aes(x=date, y=numdeathstoday, colour = name)) +
+        geom_line(size=0.9) + geom_point(size=1) + xlab ("\n") + 
         ylab ("Deaths \n") +
         # geom_text_repel(data = lineDataDeaths %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -292,31 +293,29 @@ function(input, output, session) {
         
         gghighlight(name %in% provinces) +  
         
-        scale_y_continuous(trans = log10_trans(),
-                           breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
+        # scale_y_continuous(trans = log10_trans(),
+        #                    breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
         #scale_x_continuous(breaks = c(0:lastDayDeaths)) +
         
-        annotate("segment", linetype = "longdash", 
-                 x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/3))^lastDayDeaths,
-                 colour = "#333333") +
-        
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/3))^lastDayDeaths,
+        #          colour = "#333333") +
+        # 
         # annotate(geom = "text", x = 15, y = 280, 
         #          label = "doubles every 3 days", color = "#333333", fontface=2,
         #          angle = 30) +
         # 
         # 
-        annotate("segment", linetype = "longdash", 
-                 x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/5))^lastDayDeaths,
-                 colour = "#333333") +
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/5))^lastDayDeaths,
+        #          colour = "#333333") +
         # annotate(geom = "text", x = 15, y = 70, 
         #          label = "... every 5 days", color = "#333333", fontface=2,
         #          angle = 18) +
         
-        annotate("segment", linetype = "longdash", 
-                 x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/10))^lastDayDeaths,
-                 colour = "#333333") +
-        
-        
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/10))^lastDayDeaths,
+        #          colour = "#333333") +
         
         # annotate("segment", linetype = "longdash", 
         #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
@@ -327,13 +326,13 @@ function(input, output, session) {
         
         scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
-        ggtitle(" \n", subtitle = "Cumulative number of deaths") +
+        ggtitle("daily deaths ", subtitle = "(rolling 7 day average)") +
         theme(text = element_text(size=16)) +
         theme(legend.position = "none") +
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pToday / pTodayPerCap / pTested +
+      pCanada <- pToday / pTodayPerCap / pTested / pDeaths +
         labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada
