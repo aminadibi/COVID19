@@ -42,7 +42,7 @@ function(input, output, session) {
       mutate(name = replace(name, name == "Yukon", "YT")) %>% 
       mutate(name = replace(name, name == "Northwest Territories", "NT")) %>% 
       mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
-      filter (name!="Canada") %>% filter (date!=today()) %>% mutate (numTestedPer100000=numtestedtoday/population*100000) %>% 
+      filter (name!="Canada") %>% mutate (numTestedPer100000=numtestedtoday/population*100000) %>% 
       mutate (numtodayPer100000=numtoday/population*100000) 
     
       results <- list()
@@ -156,7 +156,7 @@ function(input, output, session) {
         ylab ("Cases \n") + 
         gghighlight(name %in% provinces) +  
         
-        scale_colour_brewer(palette = "Accent") +
+        scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Number of daily cases (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
@@ -168,7 +168,7 @@ function(input, output, session) {
         ylab ("Cases per 100,000\n") + 
         gghighlight(name %in% provinces) +  
         
-        scale_colour_brewer(palette = "Accent") +
+        scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Number of daily cases per capita (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
@@ -219,7 +219,7 @@ function(input, output, session) {
         #          label = "doubles every 2 days", color = "#333333", fontface=2,
         #          angle = 30) +
         
-        scale_colour_brewer(palette = "Accent") +
+        scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
         theme(text = element_text(size=16)) +
@@ -265,7 +265,7 @@ function(input, output, session) {
       #          label = "doubles every 2 days", color = "#333333", fontface=2,
       #          angle = 30) +
       
-      scale_colour_brewer(palette = "Accent") +
+      scale_colour_brewer(palette = "Dark2") +
         ft_theme() + 
         ggtitle(" \n", subtitle = "daily number of tests (rolling 7 day mean)") +
         theme(text = element_text(size=16)) +
@@ -325,7 +325,7 @@ function(input, output, session) {
         #          label = "doubles every 2 days", color = "#333333", fontface=2,
         #          angle = 30) +
         
-        scale_colour_brewer(palette = "Accent") +
+        scale_colour_brewer(palette = "Dark2") +
         ft_theme() +
         ggtitle(" \n", subtitle = "Cumulative number of deaths") +
         theme(text = element_text(size=16)) +
