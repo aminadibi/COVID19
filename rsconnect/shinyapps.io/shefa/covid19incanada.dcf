@@ -5,9 +5,9 @@ account: shefa
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1977876
-bundleId: 3527482
+bundleId: 3890225
 url: https://shefa.shinyapps.io/covid19incanada/
-when: 1597708409.13562
+when: 1606028015.2143
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: appleMobility.R|applemobilitytrends-2020-04-13.csv|applemobilitytrends-2020-04-15.csv|applemobilitytrends-2020-04-20.csv|applemobilitytrends-2020-04-21.csv|applemobilitytrends-2020-05-06.csv|applemobilitytrends-2020-05-19.csv|applemobilitytrends-2020-06-21.csv|canadaCases-old.ai|CanadaMobility.png|countryNames.rds|covid19-april7th.png|covidcanada.ai|covidcanada.eps|covidcanada.png|covidcanadaApril8thAbsTests.ai|covidcanadaApril8thTestsStandardized.ai|driving world.pdf|googleMobility.R|mobilitycanada.ai|mobilitycanada.eps|mobilitycanada.pdf|mobilitycanada2.png|modelData.rds|predict.R|provPop.txt|trajectoryforTwitter.R|trajectoryTwitterItaly.R|transit world.pdf|walking driving.ai|walking world.ai|walking world.pdf|walking world.png|walking world@3x.png|world.rds|Worldwide Walking April 13th.png|Worldwide Driving Trends 04-15@3x.png
+ignoredFiles: appleMobility.R|applemobilitytrends-2020-04-13.csv|applemobilitytrends-2020-04-15.csv|applemobilitytrends-2020-04-20.csv|applemobilitytrends-2020-04-21.csv|applemobilitytrends-2020-05-06.csv|applemobilitytrends-2020-05-19.csv|applemobilitytrends-2020-06-21.csv|applemobilitytrends-2020-08-17.csv|canadaCases-old.ai|CanadaMobility.png|countryNames.rds|covid19-april7th.png|covidcanada.ai|covidcanada.eps|covidcanada.png|covidcanadaApril8thAbsTests.ai|covidcanadaApril8thTestsStandardized.ai|driving world.pdf|googleMobility.R|mobilitycanada.ai|mobilitycanada.eps|mobilitycanada.pdf|mobilitycanada2.png|modelData.rds|predict.R|provPop.txt|trajectoryforTwitter.R|trajectoryTwitterItaly.R|transit world.pdf|walking driving.ai|walking world.ai|walking world.pdf|walking world.png|walking world@3x.png|world.rds|Worldwide Walking April 13th.png|Worldwide Driving Trends 04-15@3x.png

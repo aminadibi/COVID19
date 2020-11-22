@@ -47,7 +47,7 @@ cityHighlight <- c("Vancouver",
             "Seattle")
 
 
-appleData <- read_csv("./applemobilitytrends-2020-06-21.csv")
+appleData <- read_csv("./applemobilitytrends-2020-08-17.csv")
 
 mobility <- as.data.frame(appleData) %>% filter(region %in% cities) %>% 
   select (-geo_type, -alternative_name, -`sub-region`, -country) %>%
@@ -88,7 +88,7 @@ p3 <- ggplot(mobility %>% filter(transportation_type == "transit") ) +
 
 pCanada <- p1 + p2 + p3 + 
   labs(caption = paste0("Visualization by Shefa Analytics.\nBased on Apple Mobility Trends Data. Last updated: ", lubridate::today())) &
-  theme(legend.position = "none") & xlab("") & scale_x_date(date_labels = "%m-%d", date_breaks = "1 month") 
+  theme(legend.position = "none") & xlab("") & scale_x_date(date_labels = "%m", date_breaks = "1 month") 
 
 
 
@@ -105,7 +105,8 @@ exclusion <- c("Albania",
                "Macao",                    
                "United Arab Emirates", 
                "Latvia",
-               "Lithuania")
+               
+               "Croatia")
   
 mobilityWorld <- as.data.frame(appleData) %>% filter(geo_type == "country/region") %>% 
   select (-geo_type, -alternative_name, -`sub-region`, -country) %>%
