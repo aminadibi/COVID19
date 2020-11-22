@@ -23,12 +23,12 @@ function(input, output, session) {
     #data (state)
     getData <- reactive ({
      
-    url <- "https://docs.google.com/spreadsheets/d/1ad7-09_Jn6AxsdkVPE33T-iLfGpPRmd3piXQqFiVeas/export?&format=csv"
+    url <- "https://health-infobase.canada.ca/src/data/covidLive/covid19-download.csv"
     
     CanadaCases <- read_csv(url)
     CanadaPop <- read_csv("./provPop.csv") 
     
-    covidCases <- left_join(CanadaCases, CanadaPop) %>% rename (name = "prname")  %>% rename (Cases = "numconf")  %>% mutate(date=dmy(date)) %>%
+    covidCases <- left_join(CanadaCases, CanadaPop) %>% rename (name = "prname")  %>% rename (Cases = "numconf")  %>% #mutate(date=dmy(date)) %>%
       mutate(name = replace(name, name == "British Columbia", "BC")) %>% 
       mutate(name = replace(name, name == "Ontario", "ON")) %>% 
       mutate(name = replace(name, name == "Alberta", "AB")) %>% 
