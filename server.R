@@ -332,13 +332,231 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pToday / pTodayPerCap / pTested / pDeaths +
-        labs(caption = paste0("Visualization by Shefa Analytics, inspired by John Burn-Murdoch.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
+      pCanada <- pToday / pTodayPerCap / pTested / pDeaths #+
+        #labs(caption = paste0("Visualization by Shefa Analytics.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada
       
     })
     
+    
+    output$compareEpiAbs <- renderPlot({
+      
+      # The palette with black:
+      
+      colourBlindPal <- c("#000000","#E69F00", "#D55E00", "#009E73", "#56B4E9", 
+                          "#999999", "#CC79A7", "#0072B2")   
+      
+      provinces <- c("ON",
+                     "BC",
+                     "QC",
+                     "AB",                    
+                     "MB",
+                     "SK")
+      
+      covidCases <- getData()$covidCases
+      
+      
+      lineDataCases <- covidCases %>% 
+        # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
+        filter (Cases>=100) %>% arrange (name, date) %>% 
+        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+      
+      lastDay <- max(lineDataCases$days)
+      
+      lineDataCases$numtoday <- roll_mean(lineDataCases$numtoday, 1, fill = 0, align = "right")
+      lineDataCases$numtodayPer100000 <- roll_mean(lineDataCases$numtodayPer100000, 1, fill = 0, align = "right")
+      lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 1, fill = 0, align = "right")
+      lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 1, fill = 0, align = "right")
+      
+      todayDataCases <- lineDataCases %>% filter (date > (today()-30))
+      
+      pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        ylab ("Cases \n") + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_colour_brewer(palette = "Dark2") +
+        ft_theme() +
+        ggtitle("daily cases", subtitle = "(daily number)") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      
+      pTodayPerCap <- ggplot(data = todayDataCases, aes(x=date, y=numtodayPer100000, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        ylab ("Cases per 100,000\n") + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_colour_brewer(palette = "Dark2") +
+        ft_theme() +
+        ggtitle("daily cases per capita", subtitle = "(daily number)") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      
+      
+      
+      pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n days since 100th case") + 
+        ylab ("Cases \n") + 
+        # geom_text_repel(data = lineDataCases %>% 
+        #                   filter(days == last(days)), aes(label = name, 
+        #                                                   x = days + 0.2, 
+        #                                                   y = Cases, 
+        #                                                   color = name,
+        #                                                   fontface=2), size = 5) + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_y_continuous(trans = log10_trans(),
+                           breaks = c(100, 300, 1000, 3000, 10000)) +
+        # scale_x_continuous(breaks = c(0:lastDay)) +
+        
+        annotate("segment", linetype = "longdash", 
+                 x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/3))^lastDay,
+                 colour = "#333333") +
+        
+        # annotate(geom = "text", x = 5, y = 150, 
+        #          label = "doubles every 3 days", color = "#333333", fontface=2,
+        #          angle = 20) +
+        
+        
+        annotate("segment", linetype = "longdash", 
+                 x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/5))^lastDay,
+                 colour = "#333333") +
+        # annotate(geom = "text", x = 5, y = 95, 
+        #          label = "doubles every 5 days", color = "#333333", fontface=2,
+        #          angle = 13) 
+        
+        annotate("segment", linetype = "longdash", 
+                 x = 0, xend = lastDay, y = 100, yend = 100*(2^(1/10))^lastDay,
+                 colour = "#333333") +
+        
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
+        #          colour = "#333333") +
+        # annotate(geom = "text", x = 4, y = 220, 
+        #          label = "doubles every 2 days", color = "#333333", fontface=2,
+        #          angle = 30) +
+        
+        scale_colour_brewer(palette = "Dark2") +
+        ft_theme() +
+        ggtitle(" \n", subtitle = "Cumulative number of confirmed cases") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
+      
+      pTested <- ggplot(data =  todayDataCases, aes(x=date, y=numTestedPer100000, colour = name)) +
+        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        ylab ("Tested per 100,000") +
+        # geom_text_repel(data = lineDataCases %>% 
+        #                   filter(days == last(days)), aes(label = name, 
+        #                                                   x = days + 0.2, 
+        #                                                   y = numtested, 
+        #                                                   color = name,
+        #                                                   fontface=2), size = 5) + 
+        gghighlight(name %in% provinces) +  
+        
+        scale_y_continuous( labels = scales::comma) +
+        #scale_x_continuous(breaks = c(0:lastDay)) +
+        
+        
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/3))^lastDay,
+        #          colour = "#333333") +
+        # 
+        # annotate(geom = "text", x = 5, y = 150, 
+        #          label = "doubles every 3 days", color = "#333333", fontface=2,
+        #          angle = 20) +
+        # 
+      # 
+      # annotate("segment", linetype = "longdash", 
+      #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/5))^lastDay,
+      #          colour = "#333333") +
+      # annotate(geom = "text", x = 5, y = 95, 
+      #          label = "doubles every 5 days", color = "#333333", fontface=2,
+      #          angle = 13) +
+      
+      # annotate("segment", linetype = "longdash", 
+      #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
+      #          colour = "#333333") +
+      # annotate(geom = "text", x = 4, y = 220, 
+      #          label = "doubles every 2 days", color = "#333333", fontface=2,
+      #          angle = 30) +
+      
+      scale_colour_brewer(palette = "Dark2") +
+        ft_theme() + 
+        ggtitle("tests", subtitle = "(daily number)") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
+      
+      lineDataDeaths <- covidCases %>% 
+        # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
+        filter (numdeaths>=10) %>% arrange (name, date) %>% 
+        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+      
+      lastDayDeaths <- max(lineDataDeaths$days)
+      
+      pDeaths <- ggplot(data = todayDataCases, aes(x=date, y=numdeathstoday, colour = name)) +
+        geom_line(size=0.9) + geom_point(size=1) + xlab ("\n") + 
+        ylab ("Deaths \n") +
+        # geom_text_repel(data = lineDataDeaths %>% 
+        #                   filter(days == last(days)), aes(label = name, 
+        #                                                   x = days + 0.2, 
+        #                                                   y = numdeaths, 
+        #                                                   color = name,
+        #                                                   fontface=2), size = 5) + 
+        
+        gghighlight(name %in% provinces) +  
+        
+        # scale_y_continuous(trans = log10_trans(),
+        #                    breaks = c(10, 20, 50, 100, 200, 500, 1000)) +
+        #scale_x_continuous(breaks = c(0:lastDayDeaths)) +
+        
+        # annotate("segment", linetype = "longdash", 
+        #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/3))^lastDayDeaths,
+        #          colour = "#333333") +
+        # 
+        # annotate(geom = "text", x = 15, y = 280, 
+        #          label = "doubles every 3 days", color = "#333333", fontface=2,
+      #          angle = 30) +
+      # 
+      # 
+      # annotate("segment", linetype = "longdash", 
+      #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/5))^lastDayDeaths,
+      #          colour = "#333333") +
+      # annotate(geom = "text", x = 15, y = 70, 
+      #          label = "... every 5 days", color = "#333333", fontface=2,
+      #          angle = 18) +
+      
+      # annotate("segment", linetype = "longdash", 
+      #          x = 0, xend = lastDayDeaths, y = 10, yend = 10*(2^(1/10))^lastDayDeaths,
+      #          colour = "#333333") +
+      
+      # annotate("segment", linetype = "longdash", 
+      #          x = 0, xend = lastDay, y = 50, yend = 50*(2^(1/2))^lastDay,
+      #          colour = "#333333") +
+      # annotate(geom = "text", x = 4, y = 220, 
+      #          label = "doubles every 2 days", color = "#333333", fontface=2,
+      #          angle = 30) +
+      
+      scale_colour_brewer(palette = "Dark2") +
+        ft_theme() +
+        ggtitle("daily deaths ", subtitle = "(daily number)") +
+        theme(text = element_text(size=16)) +
+        theme(legend.position = "none") +
+        theme(legend.title=element_blank()) 
+      #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
+      
+      pCanada <- pToday / pTodayPerCap / pTested / pDeaths +
+        labs(caption = paste0("Visualization by Shefa Analytics.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
+      
+      pCanada
+      
+    })
     
 
 }
