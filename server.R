@@ -112,7 +112,7 @@ function(input, output, session) {
         # mutate(name = replace(name, name ==    "occupied Palestinian territory", "Palestine")) %>%
         # mutate(name = replace(name, name ==     "Vatican City", "Holy See")) %>%
         group_by(name) %>%
-        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
+        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% #mutate(name = replace(name, name == "US", "United States")) %>%
         mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
       results <- list()
       results$covidCases <- covidCases
