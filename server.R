@@ -100,7 +100,7 @@ function(input, output, session) {
       caseType <- "deaths_global"
       url <- paste0("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_", caseType, ".csv")
       time_series_19_covid_Confirmed <- read_csv(url)
-      covidCases <- time_series_19_covid_Confirmed[1:213,] %>% rename (name = "Country/Region") %>%
+      covidCases <- time_series_19_covid_Confirmed  %>% rename (name = "Country/Region") %>%
         # mutate(name = replace(name, name == "Hong Kong SAR", "Hong Kong")) %>%
         # mutate(name = replace(name, name == "Iran (Islamic Republic of)", "Iran")) %>%
         # mutate(name = replace(name, name =="Republic of Korea", "South Korea")) %>%
@@ -112,7 +112,7 @@ function(input, output, session) {
         # mutate(name = replace(name, name ==    "occupied Palestinian territory", "Palestine")) %>%
         # mutate(name = replace(name, name ==     "Vatican City", "Holy See")) %>%
         group_by(name) %>%
-        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% #mutate(name = replace(name, name == "US", "United States")) %>%
+        summarise_at(vars(5:(length(time_series_19_covid_Confirmed)-1)), sum, na.rm = TRUE) %>% mutate(name = replace(name, name == "US", "United States")) %>%
         mutate(name = replace(name, name == "UK", "United Kingdom")) %>% mutate(name = replace(name, name == "Mainland China", "China"))
       results <- list()
       results$covidCases <- covidCases
