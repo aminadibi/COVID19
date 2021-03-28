@@ -42,7 +42,7 @@ function(input, output, session) {
       mutate(name = replace(name, name == "Yukon", "YT")) %>% 
       mutate(name = replace(name, name == "Northwest Territories", "NT")) %>% 
       mutate(name = replace(name, name == "Nunavut", "NU")) %>% 
-      filter (name!="Canada") %>% mutate (numTestedPer100000=numtestedtoday/population*100000) %>% 
+      filter (name!="Canada") %>% mutate (numTestedPer100000=numteststoday/population*100000) %>% 
       mutate (numtodayPer100000=numtoday/population*100000) 
     
       results <- list()
