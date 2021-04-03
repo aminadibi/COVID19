@@ -151,7 +151,7 @@ function(input, output, session) {
       lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 7, fill = 0, align = "right")
       lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 7, fill = 0, align = "right")
       
-      todayDataCases <- lineDataCases %>% filter (date > (today()-360))
+      todayDataCases <- lineDataCases %>% filter (date > (today()-365))
       
       pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
         geom_line(size=0.8) + #geom_point(size=1) + 
@@ -378,7 +378,7 @@ function(input, output, session) {
       lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 1, fill = 0, align = "right")
       lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 1, fill = 0, align = "right")
       
-      todayDataCases <- lineDataCases %>% filter (date > (today()-360))
+      todayDataCases <- lineDataCases %>% filter (date > (today()-365))
       
       pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
         geom_line(size=0.8) + #geom_point(size=1) + 
