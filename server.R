@@ -150,10 +150,11 @@ function(input, output, session) {
       lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 7, fill = 0, align = "right")
       lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 7, fill = 0, align = "right")
       
-      todayDataCases <- lineDataCases %>% filter (date > (today()-30))
+      todayDataCases <- lineDataCases %>% filter (date > (today()-360))
       
       pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Cases \n") + 
         gghighlight(name %in% provinces) +  
         
@@ -165,7 +166,8 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       
       pTodayPerCap <- ggplot(data = todayDataCases, aes(x=date, y=numtodayPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Cases per 100,000\n") + 
         gghighlight(name %in% provinces) +  
         
@@ -179,7 +181,8 @@ function(input, output, session) {
       
       
       pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n days since 100th case") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n days since 100th case") + 
         ylab ("Cases \n") + 
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -229,7 +232,8 @@ function(input, output, session) {
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
       pTested <- ggplot(data =  todayDataCases, aes(x=date, y=numTestedPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Tested per 100,000") +
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -282,7 +286,8 @@ function(input, output, session) {
       lastDayDeaths <- max(lineDataDeaths$days)
       
       pDeaths <- ggplot(data = todayDataCases, aes(x=date, y=numdeathstoday, colour = name)) +
-        geom_line(size=0.9) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.9) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Deaths \n") +
         # geom_text_repel(data = lineDataDeaths %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -332,7 +337,8 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pToday / pTodayPerCap / pTested / pDeaths #+
+     # pCanada <- pToday / pTodayPerCap / pTested / pDeaths #+
+      pCanada <- pToday / pTodayPerCap / pDeaths #+
         #labs(caption = paste0("Visualization by Shefa Analytics.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada
@@ -369,10 +375,11 @@ function(input, output, session) {
       lineDataCases$numTestedPer100000 <- roll_mean(lineDataCases$numTestedPer100000, 1, fill = 0, align = "right")
       lineDataCases$numdeathstoday <- roll_mean(lineDataCases$numdeathstoday, 1, fill = 0, align = "right")
       
-      todayDataCases <- lineDataCases %>% filter (date > (today()-30))
+      todayDataCases <- lineDataCases %>% filter (date > (today()-360))
       
       pToday <- ggplot(data = todayDataCases, aes(x=date, y=numtoday, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Cases \n") + 
         gghighlight(name %in% provinces) +  
         
@@ -384,7 +391,8 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       
       pTodayPerCap <- ggplot(data = todayDataCases, aes(x=date, y=numtodayPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Cases per 100,000\n") + 
         gghighlight(name %in% provinces) +  
         
@@ -398,7 +406,8 @@ function(input, output, session) {
       
       
       pCases <- ggplot(data = lineDataCases, aes(x=days, y=Cases, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n days since 100th case") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n days since 100th case") + 
         ylab ("Cases \n") + 
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -448,7 +457,8 @@ function(input, output, session) {
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
       pTested <- ggplot(data =  todayDataCases, aes(x=date, y=numTestedPer100000, colour = name)) +
-        geom_line(size=0.8) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.8) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Tested per 100,000") +
         # geom_text_repel(data = lineDataCases %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -501,7 +511,8 @@ function(input, output, session) {
       lastDayDeaths <- max(lineDataDeaths$days)
       
       pDeaths <- ggplot(data = todayDataCases, aes(x=date, y=numdeathstoday, colour = name)) +
-        geom_line(size=0.9) + geom_point(size=1) + xlab ("\n") + 
+        geom_line(size=0.9) + #geom_point(size=1) + 
+        xlab ("\n") + 
         ylab ("Deaths \n") +
         # geom_text_repel(data = lineDataDeaths %>% 
         #                   filter(days == last(days)), aes(label = name, 
@@ -551,7 +562,8 @@ function(input, output, session) {
         theme(legend.title=element_blank()) 
       #labs(caption = paste0("Visualization by Shefa Analytics based on a design by John Burn-Murdoch. For more, see shefa.ca. Last updated: ", max(covidCases$date))) 
       
-      pCanada <- pToday / pTodayPerCap / pTested / pDeaths +
+        #pCanada <- pToday / pTodayPerCap / pTested / pDeaths +
+        pCanada <- pToday / pTodayPerCap / pDeaths +
         labs(caption = paste0("Visualization by Shefa Analytics.\nData from Canada.ca. Last updated: ", max(covidCases$date))) 
       
       pCanada

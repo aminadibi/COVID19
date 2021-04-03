@@ -119,7 +119,7 @@ body <- dashboardBody(
             box(width = NULL, solidHeader = TRUE,
                 #title = "Comparing Trends ",
                 plotOutput("compareEpi", height = 1500) %>% withSpinner(),
-                plotOutput("compareEpiAbs", height = 1500) %>% withSpinner(),
+                #plotOutput("compareEpiAbs", height = 1500) %>% withSpinner(),
                 #plotOutput("compareEpiDeath", height = 500) %>% withSpinner()
      
             box(width = NULL, status = "warning",
