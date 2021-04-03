@@ -141,7 +141,8 @@ function(input, output, session) {
       lineDataCases <- covidCases %>% 
         # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
         filter (Cases>=100) %>% arrange (name, date) %>% 
-        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+        #group_by(name) %>% 
+        mutate(days = as.numeric(date - date[1L])) 
       
       lastDay <- max(lineDataCases$days)
 
@@ -281,7 +282,8 @@ function(input, output, session) {
       lineDataDeaths <- covidCases %>% 
         # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
         filter (numdeaths>=10) %>% arrange (name, date) %>% 
-        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+        #group_by(name) %>% 
+        mutate(days = as.numeric(date - date[1L])) 
       
       lastDayDeaths <- max(lineDataDeaths$days)
       
@@ -366,7 +368,8 @@ function(input, output, session) {
       lineDataCases <- covidCases %>% 
         # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
         filter (Cases>=100) %>% arrange (name, date) %>% 
-        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+        #group_by(name) %>% 
+        mutate(days = as.numeric(date - date[1L])) 
       
       lastDay <- max(lineDataCases$days)
       
@@ -506,7 +509,8 @@ function(input, output, session) {
       lineDataDeaths <- covidCases %>% 
         # pivot_longer(cols = -1, names_to = "date", values_to = "Cases") %>%  
         filter (numdeaths>=10) %>% arrange (name, date) %>% 
-        group_by(name) %>% mutate(days = as.numeric(date - date[1L])) 
+        #group_by(name) %>% 
+        mutate(days = as.numeric(date - date[1L])) 
       
       lastDayDeaths <- max(lineDataDeaths$days)
       
